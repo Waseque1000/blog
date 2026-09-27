@@ -1,5 +1,6 @@
 import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
+import Script from "next/script";
 import { siteConfig, getBaseUrl } from "@/lib/seo";
 import "./globals.css";
 
@@ -105,6 +106,29 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="antialiased bg-[#faf8ff] text-[#131b2e] min-h-screen flex flex-col" suppressHydrationWarning>
+        {/* Google Analytics / Google Tag */}
+        {siteConfig.gaMeasurementId && (
+          <>
+            <Script
+              strategy="afterInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.gaMeasurementId}`}
+            />
+            <Script
+              id="google-analytics"
+              strategy="afterInteractive"
+            >
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${siteConfig.gaMeasurementId}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
+
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
