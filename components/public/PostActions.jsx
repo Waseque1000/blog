@@ -6,7 +6,7 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
   const [likes, setLikes] = useState(initialLikes);
   const [hasLiked, setHasLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedType, setCopiedType] = useState(null); // 'url' | 'citation' | null
 
   useEffect(() => {
     const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
@@ -33,43 +33,115 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
     }
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try { await navigator.share({ title, text: excerpt, url: window.location.href }); }
-      catch (err) { console.error("Share error", err); }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  const handleCopyLink = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(currentUrl);
+      setCopiedType("url");
+      setTimeout(() => setCopiedType(null), 2500);
     }
   };
 
+  const handleCopyCitation = () => {
+    if (typeof window !== "undefined") {
+      const markdownCitation = `[${title}](${currentUrl}) — via Kronikl`;
+      navigator.clipboard.writeText(markdownCitation);
+      setCopiedType("citation");
+      setTimeout(() => setCopiedType(null), 2500);
+    }
+  };
+
+  const shareUrls = {
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(currentUrl)}&via=kronikl_tech`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
+    reddit: `https://reddit.com/submit?url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(title)}`,
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} ${currentUrl}`)}`,
+  };
+
   return (
-    <div className="flex items-center justify-center gap-3 py-10 mt-10 border-t border-[#c7c4d7]/30">
-      <button
-        onClick={handleLike}
-        disabled={hasLiked}
-        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-          hasLiked
-            ? "bg-[#ffdada] text-[#e21e49] border border-[#e21e49]/20 cursor-default"
-            : "bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e]"
-        }`}
-      >
-        <span className="material-symbols-outlined text-[18px]" style={hasLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>favorite</span>
-        {likes} {likes === 1 ? "Like" : "Likes"}
-      </button>
+    <div className="py-10 mt-10 border-t border-[#c7c4d7]/30">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+        {/* Like Button */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleLike}
+            disabled={hasLiked}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+              hasLiked
+                ? "bg-[#ffdada] text-[#e21e49] border border-[#e21e49]/20 cursor-default"
+                : "bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] active:scale-95"
+            }`}
+          >
+            <span className="material-symbols-outlined text-[18px]" style={hasLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>
+              favorite
+            </span>
+            <span>{likes} {likes === 1 ? "Like" : "Likes"}</span>
+          </button>
+        </div>
 
-      <button
-        onClick={handleShare}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] transition-all"
-      >
-        <span className="material-symbols-outlined text-[18px]">share</span>
-        {copied ? "Copied!" : "Share"}
-      </button>
+        {/* Social Share & Backlink Helpers */}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {/* Share on X */}
+          <a
+            href={shareUrls.twitter}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Share on X (Twitter)"
+            className="p-2.5 rounded-full bg-[#eaedff] text-[#464554] hover:bg-[#131b2e] hover:text-white transition-all flex items-center justify-center text-xs font-bold w-10 h-10 border border-[#c7c4d7]/30"
+          >
+            𝕏
+          </a>
 
-      <button className="p-2.5 rounded-full bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#4648d4] transition-all">
-        <span className="material-symbols-outlined text-[18px]">bookmark</span>
-      </button>
+          {/* Share on LinkedIn */}
+          <a
+            href={shareUrls.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Share on LinkedIn"
+            className="p-2.5 rounded-full bg-[#eaedff] text-[#464554] hover:bg-[#0077b5] hover:text-white transition-all flex items-center justify-center text-xs font-bold w-10 h-10 border border-[#c7c4d7]/30"
+          >
+            in
+          </a>
+
+          {/* Share on Reddit */}
+          <a
+            href={shareUrls.reddit}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Share on Reddit"
+            className="p-2.5 rounded-full bg-[#eaedff] text-[#464554] hover:bg-[#ff4500] hover:text-white transition-all flex items-center justify-center text-xs font-bold w-10 h-10 border border-[#c7c4d7]/30"
+          >
+            r/
+          </a>
+
+          {/* Copy URL */}
+          <button
+            onClick={handleCopyLink}
+            title="Copy post link"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] text-xs font-semibold transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">link</span>
+            {copiedType === "url" ? "Copied Link!" : "Copy Link"}
+          </button>
+
+          {/* Markdown Citation for Backlinks */}
+          <button
+            onClick={handleCopyCitation}
+            title="Copy as Markdown Backlink for blogs/GitHub"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#e1e0ff] text-[#4648d4] border border-[#4648d4]/20 hover:bg-[#4648d4] hover:text-white text-xs font-semibold transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">format_quote</span>
+            {copiedType === "citation" ? "Citation Copied!" : "Cite Article"}
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 text-center">
+        <p className="text-[12px] text-[#767585]">
+          Writing a story or research note? Use <span className="font-semibold text-[#4648d4]">Cite Article</span> to easily credit this analysis with a proper backlink.
+        </p>
+      </div>
     </div>
   );
 }
