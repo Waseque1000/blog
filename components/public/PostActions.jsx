@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiHeart, FiShare2, FiBookmark } from "react-icons/fi";
 
 export default function PostActions({ postId, initialLikes, title, excerpt, slug }) {
   const [likes, setLikes] = useState(initialLikes);
@@ -36,11 +35,8 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
 
   const handleShare = async () => {
     if (navigator.share) {
-      try {
-        await navigator.share({ title, text: excerpt, url: window.location.href });
-      } catch (err) {
-        console.error("Share error", err);
-      }
+      try { await navigator.share({ title, text: excerpt, url: window.location.href }); }
+      catch (err) { console.error("Share error", err); }
     } else {
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
@@ -49,26 +45,30 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
   };
 
   return (
-    <div className="flex items-center justify-center gap-3 py-10 mt-10 border-t border-white/10">
+    <div className="flex items-center justify-center gap-3 py-10 mt-10 border-t border-[#c7c4d7]/30">
       <button
         onClick={handleLike}
         disabled={hasLiked}
-        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
           hasLiked
-            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 cursor-default"
-            : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white"
+            ? "bg-[#ffdada] text-[#e21e49] border border-[#e21e49]/20 cursor-default"
+            : "bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e]"
         }`}
       >
-        <FiHeart className={`w-4 h-4 ${hasLiked ? "fill-current" : ""}`} />
+        <span className="material-symbols-outlined text-[18px]" style={hasLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>favorite</span>
         {likes} {likes === 1 ? "Like" : "Likes"}
       </button>
 
       <button
         onClick={handleShare}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white transition-all"
+        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] transition-all"
       >
-        <FiShare2 className="w-4 h-4" />
+        <span className="material-symbols-outlined text-[18px]">share</span>
         {copied ? "Copied!" : "Share"}
+      </button>
+
+      <button className="p-2.5 rounded-full bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#4648d4] transition-all">
+        <span className="material-symbols-outlined text-[18px]">bookmark</span>
       </button>
     </div>
   );
