@@ -74,22 +74,6 @@ export default function Navbar() {
               <span className="material-symbols-outlined text-[20px]">search</span>
             </Link>
 
-            <Link
-              href="/admin"
-              aria-label="Admin dashboard"
-              className="w-9 h-9 items-center justify-center rounded-full text-[#464554] hover:text-[#4648d4] hover:bg-[#eaedff] transition-colors hidden sm:flex"
-            >
-              <span className="material-symbols-outlined text-[19px]">key</span>
-            </Link>
-
-            <Link
-              href="/admin"
-              className="w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-[#4648d4] flex items-center justify-center text-white text-xs font-bold shadow-sm"
-              title="Admin: Wasee"
-            >
-              W
-            </Link>
-
             {/* Mobile Hamburger Button */}
             <button
               type="button"
@@ -148,14 +132,6 @@ export default function Navbar() {
             >
               <span className="material-symbols-outlined text-[20px] text-[#4648d4]">search</span>
               <span>Search All Articles</span>
-            </Link>
-            <Link
-              href="/admin"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-3 py-3 text-sm font-medium text-[#464554] hover:bg-[#eaedff] hover:text-[#131b2e] rounded-xl transition-all"
-            >
-              <span className="material-symbols-outlined text-[20px] text-[#4648d4]">admin_panel_settings</span>
-              <span>Admin Portal (Wasee)</span>
             </Link>
           </div>
         </div>

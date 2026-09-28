@@ -40,7 +40,6 @@ export default function Footer() {
             <div className="flex flex-col gap-3">
               <span className="text-[13px] font-semibold text-[#131b2e] uppercase tracking-wider">Network</span>
               <Link href="/search" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Search</Link>
-              <Link href="/admin" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Admin</Link>
               <a href="#" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Privacy</a>
               <a href="#" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Terms</a>
             </div>
