@@ -50,9 +50,9 @@ export default function Footer() {
           <div className="md:col-span-4">
             <span className="text-[13px] font-semibold text-[#131b2e] uppercase tracking-wider block mb-2">Dispatch Letter</span>
             <p className="text-sm text-[#464554] mb-4">Weekly curated essays and visual features delivered to your inbox.</p>
-            <div className="flex items-center gap-2 bg-[#f2f3ff] p-1.5 rounded-full border border-[#c7c4d7]/40">
-              <input className="bg-transparent text-sm text-[#131b2e] placeholder:text-[#464554] px-3 py-1 flex-1 focus:outline-none" placeholder="Your email address" type="email" />
-              <button className="bg-[#131b2e] text-white hover:bg-[#4648d4] text-[13px] font-semibold px-4 py-1.5 rounded-full transition-colors">Subscribe</button>
+            <div className="flex flex-col sm:flex-row gap-2 bg-[#f2f3ff] p-1.5 rounded-2xl sm:rounded-full border border-[#c7c4d7]/40">
+              <input className="bg-transparent text-sm text-[#131b2e] placeholder:text-[#464554] px-3 py-1.5 flex-1 focus:outline-none" placeholder="Your email address" type="email" />
+              <button className="bg-[#131b2e] text-white hover:bg-[#4648d4] text-[13px] font-semibold px-4 py-2 sm:py-1.5 rounded-xl sm:rounded-full transition-colors whitespace-nowrap">Subscribe</button>
             </div>
           </div>
         </div>

@@ -34,7 +34,7 @@ const PostSchema = new mongoose.Schema(
     },
     author: {
       type: String,
-      default: "Admin",
+      default: "Wasee",
     },
     status: {
       type: String,

@@ -147,7 +147,7 @@ export default function CommentsSection({ postId, initialComments = [] }) {
       </div>
 
       {/* Comment Form */}
-      <div className="bg-white rounded-2xl p-6 md:p-7 border border-[#c7c4d7]/30 shadow-sm mb-10 transition-all focus-within:border-[#4648d4]/50 focus-within:shadow-md">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-7 border border-[#c7c4d7]/30 shadow-sm mb-8 sm:mb-10 transition-all focus-within:border-[#4648d4]/50 focus-within:shadow-md">
         <h4 className="text-sm font-semibold text-[#131b2e] mb-4 flex items-center gap-2">
           <span>Leave a reply</span>
           <span className="text-xs font-normal text-[#767585]">&bull; No registration needed</span>
@@ -209,14 +209,14 @@ export default function CommentsSection({ postId, initialComments = [] }) {
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
             <span className="text-[11px] text-[#767585]">
               Respectful and relevant comments keep the discussion valuable.
             </span>
             <button
               type="submit"
               disabled={isSubmitting || !author.trim() || !content.trim()}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4648d4] hover:bg-[#3b3dbb] text-white text-xs font-semibold shadow-sm hover:shadow transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#4648d4] hover:bg-[#3b3dbb] text-white text-xs font-semibold shadow-sm hover:shadow transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (
                 <>

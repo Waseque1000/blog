@@ -12,6 +12,7 @@ export default function CreatePostPage() {
     title: "",
     slug: "",
     category: "Technology",
+    author: "Wasee",
     excerpt: "",
     content: "",
     image: "",

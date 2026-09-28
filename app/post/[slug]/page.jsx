@@ -119,14 +119,16 @@ export default async function PostPage({ params }) {
     createdAt: c.createdAt.toISOString(),
   }));
 
-  const dateObj = new Date(post.createdAt);
+  const rawCreated = post.createdAt ? new Date(post.createdAt) : new Date();
+  const dateObj = isNaN(rawCreated.getTime()) ? new Date() : rawCreated;
   const dateStr = dateObj.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
   const isoPublishedDate = dateObj.toISOString();
-  const isoModifiedDate = (post.updatedAt ? new Date(post.updatedAt) : dateObj).toISOString();
+  const rawUpdated = post.updatedAt ? new Date(post.updatedAt) : dateObj;
+  const isoModifiedDate = isNaN(rawUpdated.getTime()) ? dateObj.toISOString() : rawUpdated.toISOString();
 
   // Word count and estimated read time
   const plainText = (post.content || "").replace(/<[^>]+>/g, " ");
@@ -212,82 +214,90 @@ export default async function PostPage({ params }) {
         <meta itemProp="image" content={post.image} />
         <meta itemProp="author" content={post.author} />
 
-        {/* Hero Section */}
-        <div className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden bg-[#131b2e]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-full object-cover"
-            loading="eager"
-            fetchPriority="high"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#131b2e]/95 via-[#131b2e]/50 to-transparent" />
+        {/* Article Header */}
+        <header className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-10 md:pt-14 pb-6 sm:pb-8">
+          {/* Semantic SEO Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs text-[#767585] mb-4 sm:mb-5 font-medium">
+            <Link href="/" className="hover:text-[#4648d4] transition-colors">Home</Link>
+            <span className="text-[#c7c4d7]">/</span>
+            <Link
+              href={`/search?category=${encodeURIComponent(post.category)}`}
+              className="hover:text-[#4648d4] transition-colors text-[#4648d4] font-semibold"
+            >
+              {post.category}
+            </Link>
+            <span className="text-[#c7c4d7]">/</span>
+            <span className="text-[#464554] truncate max-w-[200px] sm:max-w-xs md:max-w-md">{post.title}</span>
+          </nav>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
-            <div className="max-w-4xl mx-auto">
-              {/* Semantic SEO Breadcrumbs */}
-              <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-gray-300 mb-6 font-medium">
-                <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                <span className="text-gray-500">/</span>
-                <Link
-                  href={`/search?category=${encodeURIComponent(post.category)}`}
-                  className="hover:text-white transition-colors text-[#a4a9ff]"
-                >
-                  {post.category}
-                </Link>
-                <span className="text-gray-500">/</span>
-                <span className="text-gray-400 truncate max-w-[200px] md:max-w-xs">{post.title}</span>
-              </nav>
+          {/* Category Pill */}
+          <div className="mb-3 sm:mb-4">
+            <Link
+              href={`/search?category=${encodeURIComponent(post.category)}`}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaedff] text-[#4648d4] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-[#4648d4] hover:text-white transition-colors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4648d4]" />
+              {post.category}
+            </Link>
+          </div>
 
-              <div className="mb-4">
-                <Link
-                  href={`/search?category=${encodeURIComponent(post.category)}`}
-                  className="inline-block px-3 py-1 rounded-full bg-[#e21e49] text-white text-[11px] font-semibold uppercase tracking-wider hover:opacity-90 transition-opacity"
-                >
-                  {post.category}
-                </Link>
+          {/* Article Title */}
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-extrabold text-[#131b2e] tracking-tight mb-5 leading-tight md:leading-[1.2]"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          >
+            {post.title}
+          </h1>
+
+          {/* Metadata Row */}
+          <div className="flex flex-wrap items-center gap-y-2.5 gap-x-3 sm:gap-x-5 text-xs sm:text-sm text-[#767585] pb-5 border-b border-[#c7c4d7]/40">
+            <span className="flex items-center gap-2">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#4648d4] to-[#6063ee] flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                {post.author?.charAt(0)?.toUpperCase()}
               </div>
+              <span className="text-[#131b2e] font-semibold">{post.author}</span>
+            </span>
+            <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
+            <span className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]">calendar_today</span>
+              <time dateTime={isoPublishedDate}>{dateStr}</time>
+            </span>
+            <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
+            <span className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]">schedule</span>
+              {readTimeMinutes} min read
+            </span>
+            <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
+            <span className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]">visibility</span>
+              {post.views} views
+            </span>
+            <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
+            <a href="#comments" className="flex items-center gap-1.5 text-[#4648d4] font-medium hover:underline transition-all">
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px]">chat_bubble</span>
+              {serializedComments.length} {serializedComments.length === 1 ? "comment" : "comments"}
+            </a>
+          </div>
+        </header>
 
-              <h1
-                className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 max-w-3xl"
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "-0.02em" }}
-              >
-                {post.title}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
-                <span className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4648d4] to-[#6063ee] flex items-center justify-center text-white font-bold text-xs shadow-inner">
-                    {post.author?.charAt(0)?.toUpperCase()}
-                  </div>
-                  <span className="text-white font-medium">{post.author}</span>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">calendar_today</span>
-                  <time dateTime={isoPublishedDate}>{dateStr}</time>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">schedule</span>
-                  {readTimeMinutes} min read
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">visibility</span>
-                  {post.views} views
-                </span>
-                <a href="#comments" className="flex items-center gap-1.5 hover:text-white transition-colors">
-                  <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
-                  {serializedComments.length} {serializedComments.length === 1 ? "comment" : "comments"}
-                </a>
-              </div>
-            </div>
+        {/* Featured Hero Image */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 mb-8 sm:mb-10">
+          <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[280px] sm:max-h-[400px] md:max-h-[520px] overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg border border-[#c7c4d7]/30 bg-[#131b2e]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-full object-cover object-center"
+              loading="eager"
+              fetchPriority="high"
+            />
           </div>
         </div>
 
         {/* Article Body */}
-        <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
           {/* Excerpt Lead Paragraph for Featured Snippets */}
-          <div className="text-xl md:text-2xl text-[#131b2e] font-medium leading-relaxed mb-8 pb-6 border-b border-[#c7c4d7]/30 italic">
+          <div className="text-lg sm:text-xl md:text-2xl text-[#131b2e] font-medium leading-relaxed mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-[#c7c4d7]/30 italic">
             &ldquo;{post.excerpt}&rdquo;
           </div>
 
@@ -356,16 +366,16 @@ export default async function PostPage({ params }) {
         {/* Related Articles - Internal Link Equity Sinks */}
         {relatedPosts.length > 0 && (
           <section className="border-t border-[#c7c4d7]/30 bg-white">
-            <div className="max-w-[1320px] mx-auto px-4 md:px-8 py-16">
+            <div className="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-16">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-bold text-[#4648d4] uppercase tracking-widest">Related Analysis</span>
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#4648d4] uppercase tracking-widest">Related Analysis</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#c7c4d7]" />
-                <span className="text-[11px] text-[#464554]">More within {post.category}</span>
+                <span className="text-[10px] sm:text-[11px] text-[#767585]">More within {post.category}</span>
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-[#131b2e] tracking-tight mb-8" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#131b2e] tracking-tight mb-6 sm:mb-8" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 Continue Reading
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 {relatedPosts.map((rp) => (
                   <Link
                     key={rp._id}

@@ -67,14 +67,14 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
   };
 
   return (
-    <div className="py-10 mt-10 border-t border-[#c7c4d7]/30">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div className="py-8 sm:py-10 mt-8 sm:mt-10 border-t border-[#c7c4d7]/30">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6">
         {/* Like & Comment Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center sm:justify-start gap-2.5 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={handleLike}
             disabled={hasLiked}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
               hasLiked
                 ? "bg-[#ffdada] text-[#e21e49] border border-[#e21e49]/20 cursor-default"
                 : "bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] active:scale-95"
@@ -88,7 +88,7 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
 
           <a
             href="#comments"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] transition-all active:scale-95"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-[18px]">
               chat_bubble
@@ -98,7 +98,7 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
         </div>
 
         {/* Social Share & Backlink Helpers */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
           {/* Share on X */}
           <a
             href={shareUrls.twitter}

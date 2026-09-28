@@ -29,7 +29,7 @@ export default async function AdminDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
-        <p className="text-gray-500 mt-2">Here is what is happening with your blog.</p>
+        <p className="text-gray-500 mt-2">Welcome back, Wasee! Here is what is happening with your blog.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
