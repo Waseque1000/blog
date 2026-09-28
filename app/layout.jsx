@@ -23,6 +23,15 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -85,7 +94,7 @@ export default function RootLayout({ children }) {
     url: baseUrl,
     logo: siteConfig.ogImage,
     sameAs: [
-      "https://twitter.com/kronikl_tech",
+      "https://twitter.com/think_tech",
       "https://github.com",
       "https://linkedin.com",
     ],

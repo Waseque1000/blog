@@ -1,8 +1,10 @@
 import connectToDatabase from "@/lib/mongodb";
 import Post from "@/models/Post";
+import Comment from "@/models/Comment";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PostActions from "@/components/public/PostActions";
+import CommentsSection from "@/components/public/CommentsSection";
 import { getBaseUrl, siteConfig } from "@/lib/seo";
 
 export async function generateMetadata({ params }) {
@@ -12,7 +14,7 @@ export async function generateMetadata({ params }) {
   if (!post) {
     return {
       title: "Article Not Found",
-      description: "The requested article could not be found on Kronikl.",
+      description: "The requested article could not be found on Think.",
     };
   }
 
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }) {
     "Technology",
     "Artificial Intelligence",
     "Analysis",
-    "Kronikl",
+    "Think",
     ...post.title.split(" ").filter((w) => w.length > 3),
   ];
 
@@ -104,6 +106,18 @@ export default async function PostPage({ params }) {
     .sort({ views: -1 })
     .limit(4)
     .lean();
+
+  // Comments for this article
+  const rawComments = await Comment.find({ postId: post._id })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const serializedComments = rawComments.map((c) => ({
+    ...c,
+    _id: c._id.toString(),
+    postId: c.postId.toString(),
+    createdAt: c.createdAt.toISOString(),
+  }));
 
   const dateObj = new Date(post.createdAt);
   const dateStr = dateObj.toLocaleDateString("en-US", {
@@ -261,6 +275,10 @@ export default async function PostPage({ params }) {
                   <span className="material-symbols-outlined text-[16px]">visibility</span>
                   {post.views} views
                 </span>
+                <a href="#comments" className="flex items-center gap-1.5 hover:text-white transition-colors">
+                  <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
+                  {serializedComments.length} {serializedComments.length === 1 ? "comment" : "comments"}
+                </a>
               </div>
             </div>
           </div>
@@ -325,6 +343,13 @@ export default async function PostPage({ params }) {
             title={post.title}
             slug={post.slug}
             excerpt={post.excerpt}
+            canonicalUrl={canonicalUrl}
+          />
+
+          {/* Comments Section */}
+          <CommentsSection
+            postId={post._id.toString()}
+            initialComments={serializedComments}
           />
         </div>
 
@@ -385,7 +410,7 @@ export default async function PostPage({ params }) {
           <section className="border-t border-[#c7c4d7]/20 bg-[#f7f6fd] py-12">
             <div className="max-w-[1320px] mx-auto px-4 md:px-8">
               <h4 className="text-xs font-bold text-[#767585] uppercase tracking-wider mb-4">
-                Trending Discussions on Kronikl
+                Trending Discussions on Think
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {trendingTopics.map((tp) => (

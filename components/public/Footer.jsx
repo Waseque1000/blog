@@ -14,10 +14,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-[#4648d4] flex items-center justify-center shadow-sm">
-                <span className="text-white font-extrabold text-sm" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>K</span>
+              <div className="w-8 h-8 flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-mark.png" alt="Think" className="w-6 h-auto object-contain" />
               </div>
-              <span className="text-xl font-semibold tracking-tight text-[#131b2e]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Kronikl</span>
+              <span className="text-xl font-bold tracking-tight text-[#131b2e]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Think</span>
             </div>
             <p className="text-sm text-[#464554] max-w-sm mb-4 leading-relaxed">
               An intersection of high-velocity social discourse and long-form editorial gravitas. Built for visionary creators, thinkers, and critics.
@@ -57,7 +58,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-[#464554]">
-          <div>&copy; {new Date().getFullYear()} Kronikl Publishing Platform. All rights reserved.</div>
+          <div>&copy; {new Date().getFullYear()} Think Publishing Platform. All rights reserved.</div>
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-[#131b2e] transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-[#131b2e] transition-colors">Terms of Service</a>

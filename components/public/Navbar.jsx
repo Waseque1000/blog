@@ -15,12 +15,13 @@ export default function Navbar() {
       <div className="h-16 max-w-[1320px] mx-auto px-4 md:px-8 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-[#4648d4] flex items-center justify-center shadow-md">
-            <span className="text-white font-extrabold text-base" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>K</span>
+          <div className="w-9 h-9 flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-mark.png" alt="Think" className="w-7 h-auto object-contain transition-transform group-hover:scale-105" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-semibold tracking-tight text-[#131b2e] leading-none" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Kronikl</span>
-            <span className="text-[11px] font-semibold text-[#464554] uppercase tracking-wider mt-0.5 hidden sm:inline-block" style={{ letterSpacing: '0.04em' }}>Editorial & Culture</span>
+            <span className="text-xl font-bold tracking-tight text-[#131b2e] leading-none" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Think</span>
+            <span className="text-[10px] font-semibold text-[#767585] uppercase tracking-wider mt-1 hidden sm:inline-block" style={{ letterSpacing: '0.04em' }}>Editorial & Insights</span>
           </div>
         </Link>
 

@@ -51,7 +51,7 @@ export default function AdminLogin() {
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                 className="w-full px-4 py-3 bg-[#f2f3ff] border border-[#c7c4d7]/40 rounded-xl text-[#131b2e] placeholder-[#767586] focus:ring-2 focus:ring-[#4648d4]/30 focus:border-[#4648d4]/50 outline-none transition-all"
-                placeholder="admin@kronikl.io"
+                placeholder="admin@think.io"
               />
             </div>
             <div>

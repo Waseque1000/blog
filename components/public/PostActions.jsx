@@ -2,11 +2,18 @@
 
 import { useState, useEffect } from "react";
 
-export default function PostActions({ postId, initialLikes, title, excerpt, slug }) {
+export default function PostActions({ postId, initialLikes, title, excerpt, slug, canonicalUrl = "" }) {
   const [likes, setLikes] = useState(initialLikes);
   const [hasLiked, setHasLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [copiedType, setCopiedType] = useState(null); // 'url' | 'citation' | null
+  const [currentUrl, setCurrentUrl] = useState(canonicalUrl);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
 
   useEffect(() => {
     const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
@@ -33,19 +40,19 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
     }
   };
 
-  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+  const activeUrl = currentUrl || canonicalUrl;
 
   const handleCopyLink = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(currentUrl);
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(activeUrl);
       setCopiedType("url");
       setTimeout(() => setCopiedType(null), 2500);
     }
   };
 
   const handleCopyCitation = () => {
-    if (typeof window !== "undefined") {
-      const markdownCitation = `[${title}](${currentUrl}) — via Kronikl`;
+    if (navigator?.clipboard) {
+      const markdownCitation = `[${title}](${activeUrl}) — via Think`;
       navigator.clipboard.writeText(markdownCitation);
       setCopiedType("citation");
       setTimeout(() => setCopiedType(null), 2500);
@@ -53,16 +60,16 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
   };
 
   const shareUrls = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(currentUrl)}&via=kronikl_tech`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
-    reddit: `https://reddit.com/submit?url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(title)}`,
-    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} ${currentUrl}`)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(activeUrl)}&via=think_tech`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(activeUrl)}`,
+    reddit: `https://reddit.com/submit?url=${encodeURIComponent(activeUrl)}&title=${encodeURIComponent(title)}`,
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} ${activeUrl}`)}`,
   };
 
   return (
     <div className="py-10 mt-10 border-t border-[#c7c4d7]/30">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-        {/* Like Button */}
+        {/* Like & Comment Buttons */}
         <div className="flex items-center gap-3">
           <button
             onClick={handleLike}
@@ -78,6 +85,16 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
             </span>
             <span>{likes} {likes === 1 ? "Like" : "Likes"}</span>
           </button>
+
+          <a
+            href="#comments"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#eaedff] text-[#464554] border border-[#c7c4d7]/30 hover:bg-[#e2e7ff] hover:text-[#131b2e] transition-all active:scale-95"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              chat_bubble
+            </span>
+            <span>Comment</span>
+          </a>
         </div>
 
         {/* Social Share & Backlink Helpers */}

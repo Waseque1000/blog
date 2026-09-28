@@ -4,7 +4,7 @@ import PostCard from "@/components/public/PostCard";
 
 export const metadata = {
   title: "Search Articles",
-  description: "Search across hundreds of tech analyses, AI developments, and coding tutorials on Kronikl.",
+  description: "Search across hundreds of tech analyses, AI developments, and coding tutorials on Think.",
   robots: {
     index: false,
     follow: true,
