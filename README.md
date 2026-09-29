@@ -152,16 +152,16 @@ Populate the required keys:
 
 ```ini
 # MongoDB Connection
-MONGODB_URI="mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/blog?retryWrites=true&w=majority"
+MONGODB_URI="mongodb+srv://<username>:<password>@cluster.example.mongodb.net/blog?retryWrites=true&w=majority"
 MONGODB_DB="blog"
 
-# Production Domain (Optional, defaults to Vercel production deployment)
-NEXT_PUBLIC_SITE_URL="https://blog-zeta-nine-22.vercel.app"
+# Site URL (Optional, for custom domain canonicals)
+NEXT_PUBLIC_SITE_URL="https://yourdomain.com"
 
 # Analytics (Optional)
-NEXT_PUBLIC_GA_ID="G-E6KLLDLN03"
+NEXT_PUBLIC_GA_ID=""
 
-# Firebase (Required for cloud storage / admin tools)
+# Firebase Credentials (For media storage & admin)
 NEXT_PUBLIC_FIREBASE_API_KEY=""
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=""
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=""
@@ -195,7 +195,7 @@ Think is engineered to achieve perfect crawl efficiency, indexation clarity, and
 ### 1. Base Domain & Canonical Safety
 `lib/seo.js` resolves the canonical domain hierarchically:
 1. `process.env.NEXT_PUBLIC_SITE_URL` (Custom Domain).
-2. Production default (`https://blog-zeta-nine-22.vercel.app`).
+2. Production default configured in `lib/seo.js` (or deployment origin).
 
 *Prevents temporary Vercel preview URLs (`*-waseque-arafats-projects.vercel.app`) from leaking into canonical tags, Open Graph meta, and shared links.*
 
