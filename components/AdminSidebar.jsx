@@ -1,45 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { 
-  FiHome, 
+  FiGrid, 
   FiFileText, 
   FiPlusSquare, 
-  FiSettings, 
-  FiLogOut,
-  FiMenu,
-  FiX
+  FiLogOut, 
+  FiMenu, 
+  FiX, 
+  FiSettings 
 } from "react-icons/fi";
 
 const menuItems = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: FiHome },
-  { name: "Posts", href: "/admin/posts", icon: FiFileText },
+  { name: "Dashboard", href: "/admin/dashboard", icon: FiGrid },
+  { name: "All Posts", href: "/admin/posts", icon: FiFileText },
   { name: "Create Post", href: "/admin/posts/create", icon: FiPlusSquare },
   { name: "Settings", href: "/admin/settings", icon: FiSettings },
 ];
 
-export default function AdminSidebar() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-
-  // Close drawer on path change
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
-
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/admin/logout", { method: "POST" });
-      router.push("/admin/login");
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
-
-  const SidebarContent = () => (
+function SidebarContent({ pathname, handleLogout, setIsMobileOpen }) {
+  return (
     <div className="h-full flex flex-col justify-between">
       <div>
         <div className="p-6 flex items-center justify-between border-b border-gray-100">
@@ -98,40 +80,64 @@ export default function AdminSidebar() {
       </div>
     </div>
   );
+}
+
+export default function AdminSidebar() {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsMobileOpen(false);
+  }
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+      router.push("/admin/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   return (
     <>
       {/* Mobile & Tablet Header Bar */}
       <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center space-x-3">
           <button
             type="button"
             onClick={() => setIsMobileOpen(true)}
-            className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg focus:outline-none"
-            aria-label="Open navigation menu"
+            className="p-2 -ml-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+            aria-label="Open menu"
           >
             <FiMenu className="w-6 h-6" />
           </button>
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-mark.png" alt="Think" className="w-5 h-auto" />
-            <span className="font-bold text-gray-900 text-lg">Think Admin</span>
-          </div>
+            <img src="/logo-mark.png" alt="Think" className="w-6 h-auto" />
+            <span className="text-lg font-bold text-gray-900">Think</span>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4648d4] to-[#6063ee] flex items-center justify-center text-white font-bold text-xs shadow-sm">
-            W
-          </div>
+        <div className="flex items-center space-x-2">
+          <Link
+            href="/admin/posts/create"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#131b2e] text-white text-xs font-semibold hover:bg-gray-800 transition"
+          >
+            <FiPlusSquare className="w-4 h-4" />
+            <span>New Post</span>
+          </Link>
         </div>
       </div>
 
       {/* Mobile Drawer Backdrop */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm lg:hidden animate-fadeIn"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden animate-fadeIn backdrop-blur-sm"
           onClick={() => setIsMobileOpen(false)}
-          aria-hidden="true"
         />
       )}
 
@@ -141,12 +147,20 @@ export default function AdminSidebar() {
           isMobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <SidebarContent />
+        <SidebarContent
+          pathname={pathname}
+          handleLogout={handleLogout}
+          setIsMobileOpen={setIsMobileOpen}
+        />
       </aside>
 
       {/* Desktop Sticky Sidebar */}
       <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 h-screen sticky top-0 shrink-0 flex-col">
-        <SidebarContent />
+        <SidebarContent
+          pathname={pathname}
+          handleLogout={handleLogout}
+          setIsMobileOpen={setIsMobileOpen}
+        />
       </aside>
     </>
   );

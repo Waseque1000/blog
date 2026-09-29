@@ -20,9 +20,7 @@ export const metadata = {
     address: false,
     telephone: false,
   },
-  alternates: {
-    canonical: "/",
-  },
+
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -92,18 +90,16 @@ export default function RootLayout({ children }) {
     "@type": "Organization",
     name: siteConfig.name,
     url: baseUrl,
-    logo: siteConfig.ogImage,
-    sameAs: [
-      "https://twitter.com/think_tech",
-      "https://github.com",
-      "https://linkedin.com",
-    ],
+    logo: {
+      "@type": "ImageObject",
+      url: `${baseUrl}/logo-mark.png`,
+    },
   };
 
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <script
           type="application/ld+json"

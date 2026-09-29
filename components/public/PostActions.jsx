@@ -4,20 +4,26 @@ import { useState, useEffect } from "react";
 
 export default function PostActions({ postId, initialLikes, title, excerpt, slug, canonicalUrl = "" }) {
   const [likes, setLikes] = useState(initialLikes);
-  const [hasLiked, setHasLiked] = useState(false);
+  const [hasLiked, setHasLiked] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
+      return !!likedPosts[postId];
+    } catch {
+      return false;
+    }
+  });
   const [isLiking, setIsLiking] = useState(false);
   const [copiedType, setCopiedType] = useState(null); // 'url' | 'citation' | null
-  const [currentUrl, setCurrentUrl] = useState(canonicalUrl);
 
+  // Deduplicated client-side view tracking (1 count per browser session, avoids bot SSR inflation)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentUrl(window.location.href);
+    if (!postId || typeof window === "undefined") return;
+    const sessionKey = `think_viewed_${postId}`;
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, "1");
+      fetch(`/api/posts/${postId}/view`, { method: "POST" }).catch(() => {});
     }
-  }, []);
-
-  useEffect(() => {
-    const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
-    if (likedPosts[postId]) setHasLiked(true);
   }, [postId]);
 
   const handleLike = async () => {
@@ -29,9 +35,11 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
         const data = await res.json();
         setLikes(data.likes);
         setHasLiked(true);
-        const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
-        likedPosts[postId] = true;
-        localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+        try {
+          const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
+          likedPosts[postId] = true;
+          localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+        } catch {}
       }
     } catch (error) {
       console.error("Failed to like post", error);
@@ -40,10 +48,11 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
     }
   };
 
-  const activeUrl = currentUrl || canonicalUrl;
+  // Always use the real canonical URL for social sharing and backlinks
+  const activeUrl = canonicalUrl || (typeof window !== "undefined" ? window.location.href : "");
 
   const handleCopyLink = () => {
-    if (navigator?.clipboard) {
+    if (navigator?.clipboard && activeUrl) {
       navigator.clipboard.writeText(activeUrl);
       setCopiedType("url");
       setTimeout(() => setCopiedType(null), 2500);
@@ -51,7 +60,7 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
   };
 
   const handleCopyCitation = () => {
-    if (navigator?.clipboard) {
+    if (navigator?.clipboard && activeUrl) {
       const markdownCitation = `[${title}](${activeUrl}) — via Think`;
       navigator.clipboard.writeText(markdownCitation);
       setCopiedType("citation");

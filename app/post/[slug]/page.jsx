@@ -7,6 +7,31 @@ import PostActions from "@/components/public/PostActions";
 import CommentsSection from "@/components/public/CommentsSection";
 import { getBaseUrl, siteConfig } from "@/lib/seo";
 
+function getCleanTags(post) {
+  if (Array.isArray(post.tags) && post.tags.length > 0) {
+    return post.tags;
+  }
+  const stopWords = /^(with|best|time|routes|tips|guide|that|this|what|which|about|under|from|your|step|steps|free|look|when|into|then|than|some|more)$/i;
+  const words = (post.title || "")
+    .split(/[\s,()—–:."']+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 3 && !stopWords.test(w));
+  return [post.category, ...Array.from(new Set(words)).slice(0, 3)];
+}
+
+function normalizeHeadings(htmlContent) {
+  if (!htmlContent) return "";
+  let content = htmlContent;
+  // If first heading in content is an h3, elevate to h2
+  const firstHeading = content.match(/<h([1-6])/i);
+  if (firstHeading && firstHeading[1] === "3") {
+    content = content.replace(/<h3([^>]*)>(.*?)<\/h3>/i, "<h2$1>$2</h2>");
+  }
+  // Convert h4 elements to h3 for proper heading hierarchy
+  content = content.replace(/<h4([^>]*)>(.*?)<\/h4>/gi, "<h3$1>$2</h3>");
+  return content;
+}
+
 export async function generateMetadata({ params }) {
   await connectToDatabase();
   const { slug } = await params;
@@ -15,24 +40,21 @@ export async function generateMetadata({ params }) {
     return {
       title: "Article Not Found",
       description: "The requested article could not be found on Think.",
+      robots: { index: false, follow: true },
     };
   }
 
   const baseUrl = getBaseUrl();
   const canonicalUrl = `${baseUrl}/post/${post.slug}`;
-  const keywords = [
-    post.category,
-    "Technology",
-    "Artificial Intelligence",
-    "Analysis",
-    "Think",
-    ...post.title.split(" ").filter((w) => w.length > 3),
-  ];
+  const tags = getCleanTags(post);
+  const absoluteImage = post.image?.startsWith("http")
+    ? post.image
+    : `${baseUrl}${post.image?.startsWith("/") ? "" : "/"}${post.image || siteConfig.ogImage}`;
 
   return {
     title: post.title,
     description: post.excerpt,
-    keywords: keywords,
+    keywords: [post.category, ...tags],
     authors: [{ name: post.author || siteConfig.author, url: baseUrl }],
     category: post.category,
     alternates: {
@@ -53,10 +75,10 @@ export async function generateMetadata({ params }) {
         : undefined,
       authors: [post.author || siteConfig.author],
       section: post.category,
-      tags: [post.category, "Technology", "AI"],
+      tags: tags,
       images: [
         {
-          url: post.image || siteConfig.ogImage,
+          url: absoluteImage,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -67,7 +89,7 @@ export async function generateMetadata({ params }) {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: [post.image || siteConfig.ogImage],
+      images: [absoluteImage],
       creator: siteConfig.twitterHandle,
     },
   };
@@ -77,18 +99,20 @@ export default async function PostPage({ params }) {
   await connectToDatabase();
   const { slug } = await params;
 
-  const post = await Post.findOneAndUpdate(
-    { slug, status: "published" },
-    { $inc: { views: 1 } },
-    { returnDocument: "after" }
-  ).lean();
+  // SSR fetch without mutating views (prevents bot view count inflation)
+  const post = await Post.findOne({ slug, status: "published" }).lean();
 
   if (!post) return notFound();
 
   const baseUrl = getBaseUrl();
   const canonicalUrl = `${baseUrl}/post/${post.slug}`;
+  const categorySlug = encodeURIComponent(post.category.toLowerCase());
+  const tags = getCleanTags(post);
+  const absoluteImage = post.image?.startsWith("http")
+    ? post.image
+    : `${baseUrl}${post.image?.startsWith("/") ? "" : "/"}${post.image || siteConfig.ogImage}`;
 
-  // Related posts for internal link equity & topic clustering
+  // Related posts for topic clustering
   const relatedPosts = await Post.find({
     category: post.category,
     _id: { $ne: post._id },
@@ -98,7 +122,7 @@ export default async function PostPage({ params }) {
     .limit(3)
     .lean();
 
-  // Additional trending topics for site-wide internal link distribution
+  // Trending posts
   const trendingTopics = await Post.find({
     _id: { $ne: post._id },
     status: "published",
@@ -107,7 +131,7 @@ export default async function PostPage({ params }) {
     .limit(4)
     .lean();
 
-  // Comments for this article
+  // Comments
   const rawComments = await Comment.find({ postId: post._id })
     .sort({ createdAt: -1 })
     .lean();
@@ -130,10 +154,13 @@ export default async function PostPage({ params }) {
   const rawUpdated = post.updatedAt ? new Date(post.updatedAt) : dateObj;
   const isoModifiedDate = isNaN(rawUpdated.getTime()) ? dateObj.toISOString() : rawUpdated.toISOString();
 
-  // Word count and estimated read time
+  // Word count and read time
   const plainText = (post.content || "").replace(/<[^>]+>/g, " ");
-  const wordCount = plainText.trim().split(/\s+/).length;
+  const wordCount = plainText.trim().split(/\s+/).filter(Boolean).length;
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+  // Normalized content for clean H1 -> H2 -> H3 hierarchy
+  const sanitizedContent = normalizeHeadings(post.content);
 
   // Schema.org BlogPosting
   const articleSchema = {
@@ -141,7 +168,7 @@ export default async function PostPage({ params }) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
-    image: [post.image || siteConfig.ogImage],
+    image: [absoluteImage],
     datePublished: isoPublishedDate,
     dateModified: isoModifiedDate,
     wordCount: wordCount,
@@ -161,11 +188,11 @@ export default async function PostPage({ params }) {
       url: baseUrl,
       logo: {
         "@type": "ImageObject",
-        url: siteConfig.ogImage,
+        url: `${baseUrl}/logo-mark.png`,
       },
     },
     articleSection: post.category,
-    keywords: `${post.category}, Technology, Artificial Intelligence, ${post.title}`,
+    keywords: [post.category, ...tags].join(", "),
   };
 
   // Schema.org BreadcrumbList
@@ -183,7 +210,7 @@ export default async function PostPage({ params }) {
         "@type": "ListItem",
         position: 2,
         name: post.category,
-        item: `${baseUrl}/search?category=${encodeURIComponent(post.category)}`,
+        item: `${baseUrl}/category/${categorySlug}`,
       },
       {
         "@type": "ListItem",
@@ -196,7 +223,6 @@ export default async function PostPage({ params }) {
 
   return (
     <>
-      {/* Search Engine Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
@@ -207,21 +233,20 @@ export default async function PostPage({ params }) {
       />
 
       <article className="bg-[#faf8ff] min-h-screen pt-16" itemScope itemType="https://schema.org/BlogPosting">
-        {/* Meta for SEO microdata */}
         <meta itemProp="headline" content={post.title} />
         <meta itemProp="datePublished" content={isoPublishedDate} />
         <meta itemProp="dateModified" content={isoModifiedDate} />
-        <meta itemProp="image" content={post.image} />
+        <meta itemProp="image" content={absoluteImage} />
         <meta itemProp="author" content={post.author} />
 
         {/* Article Header */}
         <header className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-10 md:pt-14 pb-6 sm:pb-8">
-          {/* Semantic SEO Breadcrumbs */}
+          {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs text-[#767585] mb-4 sm:mb-5 font-medium">
             <Link href="/" className="hover:text-[#4648d4] transition-colors">Home</Link>
             <span className="text-[#c7c4d7]">/</span>
             <Link
-              href={`/search?category=${encodeURIComponent(post.category)}`}
+              href={`/category/${categorySlug}`}
               className="hover:text-[#4648d4] transition-colors text-[#4648d4] font-semibold"
             >
               {post.category}
@@ -233,7 +258,7 @@ export default async function PostPage({ params }) {
           {/* Category Pill */}
           <div className="mb-3 sm:mb-4">
             <Link
-              href={`/search?category=${encodeURIComponent(post.category)}`}
+              href={`/category/${categorySlug}`}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaedff] text-[#4648d4] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-[#4648d4] hover:text-white transition-colors"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#4648d4]" />
@@ -259,22 +284,22 @@ export default async function PostPage({ params }) {
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
             <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]">calendar_today</span>
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">calendar_today</span>
               <time dateTime={isoPublishedDate}>{dateStr}</time>
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
             <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]">schedule</span>
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">schedule</span>
               {readTimeMinutes} min read
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
             <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]">visibility</span>
-              {post.views} views
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">visibility</span>
+              {post.views || 0} views
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
             <a href="#comments" className="flex items-center gap-1.5 text-[#4648d4] font-medium hover:underline transition-all">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px]">chat_bubble</span>
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px]" aria-hidden="true">chat_bubble</span>
               {serializedComments.length} {serializedComments.length === 1 ? "comment" : "comments"}
             </a>
           </div>
@@ -296,7 +321,6 @@ export default async function PostPage({ params }) {
 
         {/* Article Body */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
-          {/* Excerpt Lead Paragraph for Featured Snippets */}
           <div className="text-lg sm:text-xl md:text-2xl text-[#131b2e] font-medium leading-relaxed mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-[#c7c4d7]/30 italic">
             &ldquo;{post.excerpt}&rdquo;
           </div>
@@ -313,7 +337,7 @@ export default async function PostPage({ params }) {
               prose-code:text-[#4648d4] prose-code:bg-[#e1e0ff] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
               prose-img:rounded-2xl prose-img:shadow-md"
             style={{ fontFamily: "'Geist', system-ui, sans-serif" }}
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />
 
           {/* Keyword Pill Cloud for Internal Topic Relevance */}
@@ -321,29 +345,20 @@ export default async function PostPage({ params }) {
             <span className="text-xs font-semibold text-[#767585] uppercase tracking-wider block mb-3">Topic Exploration</span>
             <div className="flex flex-wrap gap-2">
               <Link
-                href={`/search?category=${encodeURIComponent(post.category)}`}
+                href={`/category/${categorySlug}`}
                 className="px-3 py-1 rounded-lg bg-[#eaedff] text-[#4648d4] text-xs font-semibold hover:bg-[#4648d4] hover:text-white transition-colors"
               >
                 #{post.category}
               </Link>
-              <Link
-                href="/search?q=AI"
-                className="px-3 py-1 rounded-lg bg-[#eaedff] text-[#464554] text-xs font-medium hover:bg-[#e2e7ff] transition-colors"
-              >
-                #Artificial Intelligence
-              </Link>
-              <Link
-                href="/search?q=Apple"
-                className="px-3 py-1 rounded-lg bg-[#eaedff] text-[#464554] text-xs font-medium hover:bg-[#e2e7ff] transition-colors"
-              >
-                #Tech News
-              </Link>
-              <Link
-                href="/search?q=Software"
-                className="px-3 py-1 rounded-lg bg-[#eaedff] text-[#464554] text-xs font-medium hover:bg-[#e2e7ff] transition-colors"
-              >
-                #Engineering
-              </Link>
+              {tags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/search?q=${encodeURIComponent(tag)}`}
+                  className="px-3 py-1 rounded-lg bg-[#eaedff] text-[#464554] text-xs font-medium hover:bg-[#e2e7ff] transition-colors"
+                >
+                  #{tag}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -363,7 +378,7 @@ export default async function PostPage({ params }) {
           />
         </div>
 
-        {/* Related Articles - Internal Link Equity Sinks */}
+        {/* Related Articles */}
         {relatedPosts.length > 0 && (
           <section className="border-t border-[#c7c4d7]/30 bg-white">
             <div className="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-16">
@@ -415,7 +430,7 @@ export default async function PostPage({ params }) {
           </section>
         )}
 
-        {/* Global Topic Cluster: Trending Across the Publication */}
+        {/* Global Topic Cluster: Trending */}
         {trendingTopics.length > 0 && (
           <section className="border-t border-[#c7c4d7]/20 bg-[#f7f6fd] py-12">
             <div className="max-w-[1320px] mx-auto px-4 md:px-8">
@@ -446,4 +461,3 @@ export default async function PostPage({ params }) {
     </>
   );
 }
-

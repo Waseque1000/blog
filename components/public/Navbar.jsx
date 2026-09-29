@@ -8,10 +8,13 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
   // Close mobile menu on route change
-  useEffect(() => {
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setIsOpen(false);
-  }, [pathname]);
+  }
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -29,9 +32,10 @@ export default function Navbar() {
 
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Technology", href: "/?category=Technology" },
-    { label: "Travel", href: "/?category=Travel" },
-    { label: "Programming", href: "/?category=Programming" },
+    { label: "Technology", href: "/category/technology" },
+    { label: "Travel", href: "/category/travel" },
+    { label: "Programming", href: "/category/programming" },
+    { label: "Tutorial", href: "/category/tutorial" },
   ];
 
   return (

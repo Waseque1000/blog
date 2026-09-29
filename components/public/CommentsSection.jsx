@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { FiMessageSquare, FiSend, FiUser, FiCheckCircle } from "react-icons/fi";
 
 function getInitials(name) {
@@ -53,19 +54,18 @@ function formatDate(isoString) {
 
 export default function CommentsSection({ postId, initialComments = [] }) {
   const [comments, setComments] = useState(initialComments);
-  const [author, setAuthor] = useState("");
+  const [author, setAuthor] = useState(() => {
+    if (typeof window === "undefined") return "";
+    try {
+      return localStorage.getItem("think_commenter_name") || localStorage.getItem("kronikl_commenter_name") || "";
+    } catch {
+      return "";
+    }
+  });
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
-  // Load saved commenter name from localStorage
-  useEffect(() => {
-    try {
-      const savedName = localStorage.getItem("think_commenter_name") || localStorage.getItem("kronikl_commenter_name");
-      if (savedName) setAuthor(savedName);
-    } catch {}
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -211,7 +211,7 @@ export default function CommentsSection({ postId, initialComments = [] }) {
 
           <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
             <span className="text-[11px] text-[#767585]">
-              Respectful and relevant comments keep the discussion valuable.
+              By posting, you agree to our <Link href="/privacy" className="underline hover:text-[#4648d4]">Privacy Policy</Link>.
             </span>
             <button
               type="submit"

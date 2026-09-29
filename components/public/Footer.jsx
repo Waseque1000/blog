@@ -33,15 +33,15 @@ export default function Footer() {
           <div className="md:col-span-4 grid grid-cols-2 gap-6">
             <div className="flex flex-col gap-3">
               <span className="text-[13px] font-semibold text-[#131b2e] uppercase tracking-wider">Curations</span>
-              {["Technology", "Programming", "Lifestyle", "Travel"].map(cat => (
-                <Link key={cat} href={`/?category=${cat}`} className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">{cat}</Link>
+              {["Technology", "Programming", "Travel", "Tutorial"].map(cat => (
+                <Link key={cat} href={`/category/${cat.toLowerCase()}`} className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">{cat}</Link>
               ))}
             </div>
             <div className="flex flex-col gap-3">
               <span className="text-[13px] font-semibold text-[#131b2e] uppercase tracking-wider">Network</span>
               <Link href="/search" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Search</Link>
-              <a href="#" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Privacy</a>
-              <a href="#" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Terms</a>
+              <Link href="/privacy" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Privacy</Link>
+              <Link href="/terms" className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">Terms</Link>
             </div>
           </div>
 
@@ -53,14 +53,17 @@ export default function Footer() {
               <input className="bg-transparent text-sm text-[#131b2e] placeholder:text-[#464554] px-3 py-1.5 flex-1 focus:outline-none" placeholder="Your email address" type="email" />
               <button className="bg-[#131b2e] text-white hover:bg-[#4648d4] text-[13px] font-semibold px-4 py-2 sm:py-1.5 rounded-xl sm:rounded-full transition-colors whitespace-nowrap">Subscribe</button>
             </div>
+            <div className="mt-2">
+              <span className="text-[11px] text-[#464554]">By subscribing, you agree to our <Link href="/privacy" className="underline">Privacy Policy</Link>.</span>
+            </div>
           </div>
         </div>
 
         <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-[#464554]">
           <div>&copy; {new Date().getFullYear()} Think Publishing Platform. All rights reserved.</div>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-[#131b2e] transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-[#131b2e] transition-colors">Terms of Service</a>
+            <Link href="/privacy" className="hover:text-[#131b2e] transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-[#131b2e] transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

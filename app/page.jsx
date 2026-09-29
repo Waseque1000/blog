@@ -5,6 +5,12 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
+
 export default async function HomePage({ searchParams }) {
   await connectToDatabase();
 
@@ -19,7 +25,9 @@ export default async function HomePage({ searchParams }) {
   const regularPosts = posts.filter(p => !p.featured);
 
   const mainFeatured = !category && featuredPosts.length > 0 ? featuredPosts[0] : null;
-  const displayPosts = mainFeatured ? regularPosts : posts;
+  const displayPosts = mainFeatured
+    ? posts.filter((p) => p._id.toString() !== mainFeatured._id.toString())
+    : posts;
 
   const serialize = (post) => ({
     ...post,
@@ -28,7 +36,8 @@ export default async function HomePage({ searchParams }) {
     updatedAt: post.updatedAt.toISOString(),
   });
 
-  const allCategories = ["All", "Technology", "Programming", "Lifestyle", "Travel", "Education", "Tutorial"];
+  const allCategoriesRaw = await Post.distinct("category", { status: "published" });
+  const allCategories = ["All", ...allCategoriesRaw];
 
   return (
     <div className="min-h-screen bg-[#faf8ff] pt-16">
@@ -88,7 +97,7 @@ export default async function HomePage({ searchParams }) {
               return (
                 <Link
                   key={cat}
-                  href={cat === "All" ? "/" : `/?category=${cat}`}
+                  href={cat === "All" ? "/" : `/category/${cat.toLowerCase()}`}
                   className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-bold tracking-wide transition-all duration-200 shrink-0 ${
                     isActive
                       ? "bg-[#4648d4] text-white shadow-sm"
@@ -124,7 +133,7 @@ export default async function HomePage({ searchParams }) {
               {category ? category : "Recent Dispatches"}
             </h2>
           </div>
-          <span className="text-xs sm:text-sm text-[#767585] font-medium">{displayPosts.length} articles</span>
+          <span className="text-xs sm:text-sm text-[#767585] font-medium">{posts.length} articles</span>
         </section>
 
         {/* Post Grid (1 col on mobile, 2 on tablet, 3 on desktop) */}
@@ -175,7 +184,7 @@ export default async function HomePage({ searchParams }) {
                   </button>
                 </div>
                 <div className="flex items-center gap-3 sm:gap-4 mt-3 ml-1 text-gray-400 text-[10px] sm:text-[11px]">
-                  <span>• Join 42,000+ readers</span>
+                  <span>• <Link href="/privacy" className="hover:underline">Privacy Policy</Link></span>
                   <span>• Unsubscribe anytime</span>
                 </div>
               </div>
