@@ -82,8 +82,8 @@ export default function PostCard({ post, featured = false }) {
                   Deep Dive
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#f4f5f8] text-[#464554] text-xs font-medium">
-                  <span className="material-symbols-outlined text-[15px] text-[#767585]">visibility</span>
-                  {post.views || 0} views
+                  <span className="material-symbols-outlined text-[15px] text-[#767585]">schedule</span>
+                  {readTimeMinutes} min read
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#f4f5f8] text-[#464554] text-xs font-medium">
                   <span className="material-symbols-outlined text-[15px] text-[#767585]">bookmark</span>
@@ -166,7 +166,7 @@ export default function PostCard({ post, featured = false }) {
             className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-[#283044]/80 text-[#eef0ff] text-[10px] sm:text-[11px] font-semibold backdrop-blur-sm">
-            {post.views || 0} views
+            {readTimeMinutes} min read
           </div>
         </div>
 

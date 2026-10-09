@@ -149,7 +149,7 @@ export default async function PostPage({ params }) {
   // Schema.org BlogPosting
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
+    "@type": ["Article", "BlogPosting"],
     headline: post.title,
     description: post.excerpt,
     image: [absoluteImage],
@@ -275,11 +275,6 @@ export default async function PostPage({ params }) {
             <span className="flex items-center gap-1">
               <span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">schedule</span>
               {readTimeMinutes} min read
-            </span>
-            <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
-            <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">visibility</span>
-              {post.views || 0} views
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
             <a href="#comments" className="flex items-center gap-1 text-[#4648d4] font-medium hover:underline transition-all">
@@ -434,7 +429,9 @@ export default async function PostPage({ params }) {
                     <h5 className="text-sm font-semibold text-[#131b2e] group-hover:text-[#4648d4] line-clamp-2 leading-snug">
                       {tp.title}
                     </h5>
-                    <span className="text-[11px] text-[#767585] mt-2 block">{tp.views || 0} readers</span>
+                    <span className="text-[11px] text-[#767585] mt-2 block">
+                      {new Date(tp.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
                   </Link>
                 ))}
               </div>

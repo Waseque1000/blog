@@ -33,6 +33,8 @@ export default function Navbar() {
     { label: "Technology", href: "/category/technology" },
     { label: "Programming", href: "/category/programming" },
     { label: "Tutorial", href: "/category/tutorial" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
   ];
 
   return (

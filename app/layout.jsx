@@ -71,7 +71,7 @@ export const metadata = {
     },
   },
   verification: {
-    google: siteConfig.googleVerification || "google-site-verification-think",
+    ...(siteConfig.googleVerification ? { google: siteConfig.googleVerification } : {}),
     other: {
       ...(siteConfig.bingVerification ? { "msvalidate.01": siteConfig.bingVerification } : {}),
     },
