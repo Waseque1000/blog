@@ -123,10 +123,9 @@ export default function CreatePostPage() {
                 >
                   <option value="Technology">Technology</option>
                   <option value="Programming">Programming</option>
-                  <option value="Lifestyle">Lifestyle</option>
-                  <option value="Travel">Travel</option>
-                  <option value="Education">Education</option>
                   <option value="Tutorial">Tutorial</option>
+                  <option value="Software">Software</option>
+                  <option value="Hardware">Hardware</option>
                   <option value="Other">Other</option>
                 </select>
               </div>

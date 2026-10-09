@@ -1,6 +1,7 @@
-import connectToDatabase from "@/lib/mongodb";
-import Post from "@/models/Post";
+import { getAllPosts, getAllCategories } from "@/lib/posts";
 import { getBaseUrl } from "@/lib/seo";
+
+export const dynamic = "force-static";
 
 export default async function sitemap() {
   const baseUrl = getBaseUrl();
@@ -10,14 +11,7 @@ export default async function sitemap() {
   let categoryRoutes = [];
 
   try {
-    await connectToDatabase();
-
-    const posts = await Post.find(
-      { status: "published" },
-      "slug category updatedAt createdAt"
-    )
-      .sort({ createdAt: -1 })
-      .lean();
+    const posts = getAllPosts();
 
     if (posts.length > 0) {
       const topDate = posts[0].updatedAt || posts[0].createdAt;
@@ -29,19 +23,19 @@ export default async function sitemap() {
       url: `${baseUrl}/post/${post.slug}`,
       lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.createdAt || Date.now()),
       changeFrequency: "weekly",
-      priority: 0.85,
+      priority: 0.9,
     }));
 
     // Dynamic Category URLs (only index categories that actually have published posts)
-    const uniqueCategories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
+    const uniqueCategories = getAllCategories();
     categoryRoutes = uniqueCategories.map((cat) => ({
       url: `${baseUrl}/category/${encodeURIComponent(cat.toLowerCase())}`,
       lastModified: latestPostDate,
-      changeFrequency: "weekly",
-      priority: 0.75,
+      changeFrequency: "daily",
+      priority: 0.85,
     }));
   } catch (error) {
-    console.error("Error generating dynamic sitemap:", error);
+    console.error("Error generating static sitemap:", error);
   }
 
   // Canonical indexable static pages (Note: /search is noindex and excluded)

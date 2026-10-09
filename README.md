@@ -58,7 +58,7 @@
   - Frictionless, un-authenticated discussion engine with avatar generation and local storage memory.
 
 ### 2. Search Engine & Discovery
-- **Dedicated Category Hubs:** `/category/technology`, `/category/programming`, `/category/travel`, and `/category/tutorial`.
+- **Dedicated Category Hubs:** `/category/technology`, `/category/programming`, and `/category/tutorial`.
 - **Structured Data (JSON-LD):**
   - `BlogPosting` on all articles (word count, reading time, ISO dates, author identity, publisher schema).
   - `BreadcrumbList` on category and article pages.
@@ -94,7 +94,7 @@
 .
 ├── app/
 │   ├── (public)/
-│   │   ├── category/[slug]/    # Dynamic SEO Category Hubs (Technology, Travel, etc.)
+│   │   ├── category/[slug]/    # Dynamic SEO Category Hubs (Technology, Programming, Tutorial)
 │   │   ├── post/[slug]/        # Individual Article Reader + JSON-LD Schema
 │   │   ├── privacy/            # Privacy Policy (Legally accurate, form-linked)
 │   │   ├── search/             # Word-Boundary Ranked Search Interface

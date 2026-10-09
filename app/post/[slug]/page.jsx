@@ -1,11 +1,16 @@
-import connectToDatabase from "@/lib/mongodb";
-import Post from "@/models/Post";
-import Comment from "@/models/Comment";
+import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PostActions from "@/components/public/PostActions";
 import CommentsSection from "@/components/public/CommentsSection";
 import { getBaseUrl, siteConfig } from "@/lib/seo";
+
+export async function generateStaticParams() {
+  const posts = getAllPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
 
 function getCleanTags(post) {
   if (Array.isArray(post.tags) && post.tags.length > 0) {
@@ -33,9 +38,8 @@ function normalizeHeadings(htmlContent) {
 }
 
 export async function generateMetadata({ params }) {
-  await connectToDatabase();
   const { slug } = await params;
-  const post = await Post.findOne({ slug, status: "published" }).lean();
+  const post = getPostBySlug(slug);
   if (!post) {
     return {
       title: "Article Not Found",
@@ -96,11 +100,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function PostPage({ params }) {
-  await connectToDatabase();
   const { slug } = await params;
-
-  // SSR fetch without mutating views (prevents bot view count inflation)
-  const post = await Post.findOne({ slug, status: "published" }).lean();
+  const post = getPostBySlug(slug);
 
   if (!post) return notFound();
 
@@ -113,35 +114,18 @@ export default async function PostPage({ params }) {
     : `${baseUrl}${post.image?.startsWith("/") ? "" : "/"}${post.image || siteConfig.ogImage}`;
 
   // Related posts for topic clustering
-  const relatedPosts = await Post.find({
-    category: post.category,
-    _id: { $ne: post._id },
-    status: "published",
-  })
-    .sort({ createdAt: -1 })
-    .limit(3)
-    .lean();
+  const allPosts = getAllPosts();
+  const relatedPosts = allPosts
+    .filter((p) => (p.category || "").toLowerCase() === (post.category || "").toLowerCase() && p.slug !== post.slug)
+    .slice(0, 3);
 
   // Trending posts
-  const trendingTopics = await Post.find({
-    _id: { $ne: post._id },
-    status: "published",
-  })
-    .sort({ views: -1 })
-    .limit(4)
-    .lean();
+  const trendingTopics = allPosts
+    .filter((p) => p.slug !== post.slug)
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
+    .slice(0, 4);
 
-  // Comments
-  const rawComments = await Comment.find({ postId: post._id })
-    .sort({ createdAt: -1 })
-    .lean();
-
-  const serializedComments = rawComments.map((c) => ({
-    ...c,
-    _id: c._id.toString(),
-    postId: c.postId.toString(),
-    createdAt: c.createdAt.toISOString(),
-  }));
+  const serializedComments = [];
 
   const rawCreated = post.createdAt ? new Date(post.createdAt) : new Date();
   const dateObj = isNaN(rawCreated.getTime()) ? new Date() : rawCreated;

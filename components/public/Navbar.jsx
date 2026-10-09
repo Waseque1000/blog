@@ -33,7 +33,6 @@ export default function Navbar() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Technology", href: "/category/technology" },
-    { label: "Travel", href: "/category/travel" },
     { label: "Programming", href: "/category/programming" },
     { label: "Tutorial", href: "/category/tutorial" },
   ];

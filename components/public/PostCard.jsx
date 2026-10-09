@@ -27,13 +27,17 @@ export default function PostCard({ post, featured = false }) {
     year: "numeric",
   });
 
+  const plainText = (post.content || post.excerpt || "").replace(/<[^>]+>/g, " ");
+  const wordCount = plainText.trim().split(/\s+/).filter(Boolean).length;
+  const readTimeMinutes = Math.max(3, Math.ceil(wordCount / 200));
+
   // Featured split hero card
   if (featured) {
     return (
       <Link href={`/post/${post.slug}`} className="group block">
         <article className="bg-white rounded-2xl md:rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 transition-all duration-300 border border-[#c7c4d7]/30">
           {/* Image column */}
-          <div className="lg:col-span-7 relative group overflow-hidden aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto lg:min-h-[420px] bg-[#eaedff]">
+          <div className="lg:col-span-6 xl:col-span-7 relative group overflow-hidden aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto lg:min-h-[380px] lg:max-h-[460px] bg-[#eaedff]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.image}
@@ -41,34 +45,52 @@ export default function PostCard({ post, featured = false }) {
               className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
             <div className="absolute top-4 left-4 z-10">
-              <span className="px-3 py-1 rounded-full bg-[#e21e49] text-white text-[11px] font-bold uppercase tracking-wider shadow-md">
-                Featured Deep-Dive
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#131b2e]/90 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider shadow-lg border border-white/20">
+                <span className="w-2 h-2 rounded-full bg-[#4648d4] animate-pulse" />
+                Featured Editorial
               </span>
             </div>
           </div>
 
           {/* Content column */}
-          <div className="lg:col-span-5 p-5 sm:p-7 md:p-8 lg:p-10 flex flex-col justify-between bg-white">
+          <div className="lg:col-span-6 xl:col-span-5 p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between bg-white">
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="px-2.5 py-0.5 rounded-full bg-[#e1e0ff] text-[#4648d4] text-[11px] font-bold uppercase tracking-wider">
                   {post.category}
                 </span>
                 <span className="text-[#767585] text-xs font-medium">• {dateStr}</span>
+                <span className="text-[#767585] text-xs font-medium">• {readTimeMinutes} min read</span>
               </div>
               <h2
-                className="text-xl sm:text-2xl lg:text-[32px] lg:leading-[40px] font-bold text-[#131b2e] tracking-tight mb-3 group-hover:text-[#4648d4] transition-colors"
+                className="text-xl sm:text-2xl lg:text-[28px] xl:text-[32px] lg:leading-[36px] xl:leading-[40px] font-extrabold text-[#131b2e] tracking-tight mb-3 group-hover:text-[#4648d4] transition-colors"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "-0.02em" }}
               >
                 {post.title}
               </h2>
-              <p className="text-sm sm:text-base text-[#464554] leading-relaxed line-clamp-3 mb-6">
+              <p className="text-sm sm:text-base text-[#464554] leading-relaxed line-clamp-3 sm:line-clamp-4 mb-4">
                 {post.excerpt}
               </p>
+
+              {/* Highlights badge row filling the dead space */}
+              <div className="flex flex-wrap items-center gap-2 py-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#f0effe] text-[#4648d4] text-xs font-semibold">
+                  <span className="material-symbols-outlined text-[15px]">auto_awesome</span>
+                  Deep Dive
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#f4f5f8] text-[#464554] text-xs font-medium">
+                  <span className="material-symbols-outlined text-[15px] text-[#767585]">visibility</span>
+                  {post.views || 0} views
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#f4f5f8] text-[#464554] text-xs font-medium">
+                  <span className="material-symbols-outlined text-[15px] text-[#767585]">bookmark</span>
+                  Essential Read
+                </span>
+              </div>
             </div>
 
             {/* Author + Actions */}
-            <div className="pt-4 border-t border-[#c7c4d7]/30">
+            <div className="pt-4 border-t border-[#c7c4d7]/30 mt-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4648d4] to-[#6063ee] flex items-center justify-center text-white font-bold text-sm ring-2 ring-[#4648d4]/20 shadow-sm">
@@ -81,7 +103,7 @@ export default function PostCard({ post, featured = false }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eaedff] text-[#464554] hover:bg-[#e1e0ff] hover:text-[#e21e49] transition-colors text-xs font-semibold"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eaedff] text-[#464554] hover:bg-[#e1e0ff] hover:text-[#4648d4] transition-colors text-xs font-semibold"
                     onClick={(e) => e.preventDefault()}
                     aria-label={`${post.likes || 0} likes`}
                   >
@@ -162,7 +184,7 @@ export default function PostCard({ post, featured = false }) {
             <div className="flex items-center justify-between text-[#464554]">
               <div className="flex items-center gap-3">
                 <button
-                  className="flex items-center gap-1 hover:text-[#e21e49] transition-colors"
+                  className="flex items-center gap-1 hover:text-[#4648d4] transition-colors"
                   onClick={(e) => e.preventDefault()}
                   aria-label={`${post.likes || 0} likes`}
                 >

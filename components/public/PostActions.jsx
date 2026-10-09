@@ -16,36 +16,23 @@ export default function PostActions({ postId, initialLikes, title, excerpt, slug
   const [isLiking, setIsLiking] = useState(false);
   const [copiedType, setCopiedType] = useState(null); // 'url' | 'citation' | null
 
-  // Deduplicated client-side view tracking (1 count per browser session, avoids bot SSR inflation)
   useEffect(() => {
     if (!postId || typeof window === "undefined") return;
     const sessionKey = `think_viewed_${postId}`;
     if (!sessionStorage.getItem(sessionKey)) {
       sessionStorage.setItem(sessionKey, "1");
-      fetch(`/api/posts/${postId}/view`, { method: "POST" }).catch(() => {});
     }
   }, [postId]);
 
-  const handleLike = async () => {
-    if (hasLiked || isLiking) return;
-    setIsLiking(true);
+  const handleLike = () => {
+    if (hasLiked) return;
+    setLikes((prev) => prev + 1);
+    setHasLiked(true);
     try {
-      const res = await fetch(`/api/posts/${postId}/like`, { method: "POST" });
-      if (res.ok) {
-        const data = await res.json();
-        setLikes(data.likes);
-        setHasLiked(true);
-        try {
-          const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
-          likedPosts[postId] = true;
-          localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
-        } catch {}
-      }
-    } catch (error) {
-      console.error("Failed to like post", error);
-    } finally {
-      setIsLiking(false);
-    }
+      const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "{}");
+      likedPosts[postId] = true;
+      localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+    } catch {}
   };
 
   // Always use the real canonical URL for social sharing and backlinks

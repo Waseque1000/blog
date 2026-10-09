@@ -67,7 +67,17 @@ export default function CommentsSection({ postId, initialComments = [] }) {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    if (!postId || typeof window === "undefined") return;
+    try {
+      const stored = JSON.parse(localStorage.getItem(`comments_${postId}`) || "[]");
+      if (stored.length > 0) {
+        setComments((prev) => [...stored, ...prev]);
+      }
+    } catch {}
+  }, [postId]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
@@ -84,39 +94,25 @@ export default function CommentsSection({ postId, initialComments = [] }) {
       return;
     }
 
-    setIsSubmitting(true);
+    const newComment = {
+      _id: "local_" + Date.now(),
+      postId,
+      author: trimmedAuthor,
+      content: trimmedContent,
+      createdAt: new Date().toISOString(),
+    };
+
+    setComments((prev) => [newComment, ...prev]);
+    setContent("");
+    setSuccessMessage("Comment published!");
+
     try {
-      const res = await fetch(`/api/posts/${postId}/comments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          author: trimmedAuthor,
-          content: trimmedContent,
-        }),
-      });
+      localStorage.setItem("think_commenter_name", trimmedAuthor);
+      const stored = JSON.parse(localStorage.getItem(`comments_${postId}`) || "[]");
+      localStorage.setItem(`comments_${postId}`, JSON.stringify([newComment, ...stored]));
+    } catch {}
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to post comment");
-      }
-
-      // Prepend newly posted comment
-      setComments((prev) => [data, ...prev]);
-      setContent("");
-      setSuccessMessage("Comment published!");
-
-      // Save name for convenience
-      try {
-        localStorage.setItem("think_commenter_name", trimmedAuthor);
-      } catch {}
-
-      setTimeout(() => setSuccessMessage(""), 4000);
-    } catch (err) {
-      setError(err.message || "Failed to post comment. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(() => setSuccessMessage(""), 4000);
   };
 
   return (

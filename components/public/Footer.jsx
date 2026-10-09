@@ -23,17 +23,17 @@ export default function Footer() {
             <p className="text-sm text-[#464554] max-w-sm mb-4 leading-relaxed">
               An intersection of high-velocity social discourse and long-form editorial gravitas. Built for visionary creators, thinkers, and critics.
             </p>
-            <div className="flex items-center gap-2 text-[#464554]">
+            <Link href="/feed.xml" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#464554] hover:text-[#131b2e] transition-colors w-fit">
               <span className="material-symbols-outlined text-[18px]">rss_feed</span>
-              <span className="text-[11px] font-semibold hover:text-[#131b2e] cursor-pointer transition-colors">Editorial RSS Feed</span>
-            </div>
+              <span className="text-[11px] font-semibold">Editorial RSS Feed</span>
+            </Link>
           </div>
 
           {/* Links */}
           <div className="md:col-span-4 grid grid-cols-2 gap-6">
             <div className="flex flex-col gap-3">
               <span className="text-[13px] font-semibold text-[#131b2e] uppercase tracking-wider">Curations</span>
-              {["Technology", "Programming", "Travel", "Tutorial"].map(cat => (
+              {["Technology", "Programming", "Tutorial"].map(cat => (
                 <Link key={cat} href={`/category/${cat.toLowerCase()}`} className="text-sm text-[#464554] hover:text-[#131b2e] transition-colors">{cat}</Link>
               ))}
             </div>

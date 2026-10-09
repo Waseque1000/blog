@@ -45,7 +45,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold text-[#131b2e] mb-3">2. Editorial &amp; Informational Content</h2>
             <p>
-              All articles, tutorials, price comparisons, and travel guides are published for general informational and educational purposes. While we strive to ensure our pricing data and travel regulations remain accurate, rates, official rules, and product specifications change over time. Readers should independently verify time-sensitive details before traveling or making purchasing decisions.
+              All articles, tutorials, hardware comparisons, and tech guides are published for general informational and educational purposes. While we strive to ensure our benchmarks, software tips, and product specifications remain accurate, rates and technology specifications change over time. Readers should independently verify time-sensitive details before making purchasing or deployment decisions.
             </p>
           </section>
 

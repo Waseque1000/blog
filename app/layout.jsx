@@ -64,6 +64,12 @@ export const metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: siteConfig.googleVerification || "google-site-verification-think",
+    other: {
+      ...(siteConfig.bingVerification ? { "msvalidate.01": siteConfig.bingVerification } : {}),
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -94,11 +100,17 @@ export default function RootLayout({ children }) {
       "@type": "ImageObject",
       url: `${baseUrl}/logo-mark.png`,
     },
+    sameAs: [
+      "https://github.com",
+      "https://twitter.com/think_tech",
+    ],
   };
 
   return (
     <html lang="en">
       <head>
+        <link rel="alternate" type="application/rss+xml" title="Think — Editorial RSS Feed" href="/feed.xml" />
+        <link rel="search" type="application/opensearchdescription+xml" title="Think Search" href="/opensearch.xml" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <script

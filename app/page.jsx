@@ -1,9 +1,7 @@
-import connectToDatabase from "@/lib/mongodb";
-import Post from "@/models/Post";
+import { getAllPosts, getAllCategories } from "@/lib/posts";
 import PostCard from "@/components/public/PostCard";
 import Link from "next/link";
-
-export const dynamic = "force-dynamic";
+import { getBaseUrl, siteConfig } from "@/lib/seo";
 
 export const metadata = {
   alternates: {
@@ -11,46 +9,47 @@ export const metadata = {
   },
 };
 
-export default async function HomePage({ searchParams }) {
-  await connectToDatabase();
+export default function HomePage() {
+  const posts = getAllPosts();
+  const featuredPosts = posts.filter((p) => p.featured);
+  const regularPosts = posts.filter((p) => !p.featured);
 
-  const resolvedParams = await searchParams;
-  const category = resolvedParams?.category;
-
-  const query = { status: "published" };
-  if (category) query.category = category;
-
-  const posts = await Post.find(query).sort({ createdAt: -1 }).lean();
-  const featuredPosts = posts.filter(p => p.featured);
-  const regularPosts = posts.filter(p => !p.featured);
-
-  const mainFeatured = !category && featuredPosts.length > 0 ? featuredPosts[0] : null;
+  const mainFeatured = featuredPosts.length > 0 ? featuredPosts[0] : null;
   const displayPosts = mainFeatured
-    ? posts.filter((p) => p._id.toString() !== mainFeatured._id.toString())
+    ? posts.filter((p) => p._id !== mainFeatured._id)
     : posts;
 
-  const serialize = (post) => ({
-    ...post,
-    _id: post._id.toString(),
-    createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt.toISOString(),
-  });
+  const allCategories = ["All", ...getAllCategories()];
 
-  const allCategoriesRaw = await Post.distinct("category", { status: "published" });
-  const allCategories = ["All", ...allCategoriesRaw];
+  const baseUrl = getBaseUrl();
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Latest Technology & Developer Insights",
+    description: siteConfig.description,
+    itemListElement: posts.slice(0, 10).map((post, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: post.title,
+      url: `${baseUrl}/post/${post.slug}`,
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-[#faf8ff] pt-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
       <div className="relative w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-8 overflow-hidden">
 
         {/* Ambient glow */}
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-tr from-[#4648d4]/10 via-[#c7c4d7]/40 to-transparent blur-[120px] -z-10 pointer-events-none rounded-full" />
 
         {/* Hero / Masthead */}
-        {!category && (
-          <section className="pt-8 pb-6 sm:pt-12 sm:pb-8 md:pt-16 md:pb-10 flex flex-col items-center text-center">
+        <section className="pt-8 pb-6 sm:pt-12 sm:pb-8 md:pt-16 md:pb-10 flex flex-col items-center text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e2e7ff] text-[#4648d4] mb-3 sm:mb-4 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#e21e49] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#4648d4] animate-pulse" />
               <span className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase">Curated Editorial Feed</span>
             </div>
             <h1
@@ -58,7 +57,7 @@ export default async function HomePage({ searchParams }) {
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em' }}
             >
               Stories worth reading. <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-[#4648d4] via-[#6063ee] to-[#ba0035] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#4648d4] via-[#6063ee] to-[#0284c7] bg-clip-text text-transparent">
                 Ideas worth sharing.
               </span>
             </h1>
@@ -74,7 +73,7 @@ export default async function HomePage({ searchParams }) {
                 <input
                   name="q"
                   className="w-full bg-transparent text-sm sm:text-base text-[#131b2e] placeholder:text-[#767586] px-2.5 sm:px-3 focus:outline-none"
-                  placeholder="Search essays, guides, or destinations..."
+                  placeholder="Search tech articles, coding tutorials, and guides..."
                   type="text"
                 />
                 <button
@@ -87,17 +86,16 @@ export default async function HomePage({ searchParams }) {
               </form>
             </div>
           </section>
-        )}
 
         {/* Category Filter Pills - Horizontally scrollable on mobile */}
         <div className="relative mb-6 sm:mb-8">
           <div className="flex items-center gap-2 overflow-x-auto w-full justify-start md:justify-center py-2 px-1 scrollbar-hide -mx-4 sm:mx-0 px-4 sm:px-0">
-            {allCategories.map(cat => {
-              const isActive = (!category && cat === "All") || category === cat;
+            {allCategories.map((cat) => {
+              const isActive = cat === "All";
               return (
                 <Link
                   key={cat}
-                  href={cat === "All" ? "/" : `/category/${cat.toLowerCase()}`}
+                  href={cat === "All" ? "/" : `/category/${encodeURIComponent(cat.toLowerCase())}`}
                   className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-bold tracking-wide transition-all duration-200 shrink-0 ${
                     isActive
                       ? "bg-[#4648d4] text-white shadow-sm"
@@ -112,9 +110,9 @@ export default async function HomePage({ searchParams }) {
         </div>
 
         {/* Featured Post Card */}
-        {mainFeatured && !category && (
+        {mainFeatured && (
           <section className="my-6 sm:my-8">
-            <PostCard post={serialize(mainFeatured)} featured={true} />
+            <PostCard post={mainFeatured} featured={true} />
           </section>
         )}
 
@@ -130,7 +128,7 @@ export default async function HomePage({ searchParams }) {
               className="text-2xl sm:text-3xl font-bold text-[#131b2e] tracking-tight"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.02em' }}
             >
-              {category ? category : "Recent Dispatches"}
+              Recent Dispatches
             </h2>
           </div>
           <span className="text-xs sm:text-sm text-[#767585] font-medium">{posts.length} articles</span>
@@ -146,14 +144,13 @@ export default async function HomePage({ searchParams }) {
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-12 sm:mb-16">
             {displayPosts.map(post => (
-              <PostCard key={post._id} post={serialize(post)} />
+              <PostCard key={post._id} post={post} />
             ))}
           </section>
         )}
 
         {/* Newsletter Banner */}
-        {!category && (
-          <section className="my-10 sm:my-14 bg-gradient-to-r from-[#283044] via-[#283044] to-[#131b2e] text-[#eef0ff] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
+        <section className="my-10 sm:my-14 bg-gradient-to-r from-[#283044] via-[#283044] to-[#131b2e] text-[#eef0ff] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
             <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-[#4648d4]/20 blur-3xl pointer-events-none" />
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
               <div className="lg:col-span-7">
@@ -190,7 +187,6 @@ export default async function HomePage({ searchParams }) {
               </div>
             </div>
           </section>
-        )}
       </div>
     </div>
   );

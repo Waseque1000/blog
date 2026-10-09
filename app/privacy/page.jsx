@@ -68,7 +68,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-[#131b2e] mb-3">4. Third-Party Links</h2>
             <p>
-              Our guides may link to official government portals, documentation, or travel hotlines for informational convenience. We do not control or endorse the privacy practices of external websites.
+              Our guides may link to official developer documentation, open-source repositories, or external resources for informational convenience. We do not control or endorse the privacy practices of external websites.
             </p>
           </section>
 

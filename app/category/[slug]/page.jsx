@@ -1,23 +1,22 @@
-import connectToDatabase from "@/lib/mongodb";
-import Post from "@/models/Post";
+import { getAllCategories, getPostsByCategory } from "@/lib/posts";
 import PostCard from "@/components/public/PostCard";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, siteConfig } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export async function generateStaticParams() {
+  const categories = getAllCategories();
+  return categories.map((cat) => ({
+    slug: encodeURIComponent(cat.toLowerCase()),
+  }));
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const categoryName = decodeURIComponent(slug);
+  const posts = getPostsByCategory(categoryName);
 
-  await connectToDatabase();
-  const count = await Post.countDocuments({
-    status: "published",
-    category: { $regex: new RegExp(`^${categoryName}$`, "i") },
-  });
-
-  if (count === 0) {
+  if (!posts || posts.length === 0) {
     return {
       title: "Category Not Found",
       description: "The requested category could not be found on Think.",
@@ -54,16 +53,7 @@ export async function generateMetadata({ params }) {
 export default async function CategoryPage({ params }) {
   const { slug } = await params;
   const categoryParam = decodeURIComponent(slug);
-
-  await connectToDatabase();
-
-  // Find posts matching category case-insensitively
-  const posts = await Post.find({
-    status: "published",
-    category: { $regex: new RegExp(`^${categoryParam}$`, "i") },
-  })
-    .sort({ createdAt: -1 })
-    .lean();
+  const posts = getPostsByCategory(categoryParam);
 
   if (!posts || posts.length === 0) {
     return notFound();
@@ -74,14 +64,7 @@ export default async function CategoryPage({ params }) {
   const canonicalUrl = `${baseUrl}/category/${encodeURIComponent(slug.toLowerCase())}`;
 
   // Get all active categories with published posts for filter pills
-  const allCategoriesRaw = await Post.distinct("category", { status: "published" });
-
-  const serialize = (post) => ({
-    ...post,
-    _id: post._id.toString(),
-    createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt ? post.updatedAt.toISOString() : post.createdAt.toISOString(),
-  });
+  const allCategoriesRaw = getAllCategories();
 
   const collectionSchema = {
     "@context": "https://schema.org",
@@ -184,7 +167,7 @@ export default async function CategoryPage({ params }) {
           {/* Post Grid */}
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-16">
             {posts.map((post) => (
-              <PostCard key={post._id} post={serialize(post)} />
+              <PostCard key={post._id} post={post} />
             ))}
           </section>
         </div>
