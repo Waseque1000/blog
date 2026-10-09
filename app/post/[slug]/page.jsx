@@ -224,9 +224,9 @@ export default async function PostPage({ params }) {
         <meta itemProp="author" content={post.author} />
 
         {/* Article Header */}
-        <header className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-10 md:pt-14 pb-6 sm:pb-8">
+        <header className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-10 md:pt-14 pb-5 sm:pb-8">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs text-[#767585] mb-4 sm:mb-5 font-medium">
+          <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-[#767585] mb-3.5 sm:mb-5 font-medium">
             <Link href="/" className="hover:text-[#4648d4] transition-colors">Home</Link>
             <span className="text-[#c7c4d7]">/</span>
             <Link
@@ -236,14 +236,14 @@ export default async function PostPage({ params }) {
               {post.category}
             </Link>
             <span className="text-[#c7c4d7]">/</span>
-            <span className="text-[#464554] truncate max-w-[200px] sm:max-w-xs md:max-w-md">{post.title}</span>
+            <span className="text-[#464554] truncate max-w-[160px] sm:max-w-xs md:max-w-md">{post.title}</span>
           </nav>
 
           {/* Category Pill */}
           <div className="mb-3 sm:mb-4">
             <Link
               href={`/category/${categorySlug}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaedff] text-[#4648d4] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-[#4648d4] hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#eaedff] text-[#4648d4] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-[#4648d4] hover:text-white transition-colors"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#4648d4]" />
               {post.category}
@@ -252,46 +252,46 @@ export default async function PostPage({ params }) {
 
           {/* Article Title */}
           <h1
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-extrabold text-[#131b2e] tracking-tight mb-5 leading-tight md:leading-[1.2]"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-extrabold text-[#131b2e] tracking-tight mb-4 sm:mb-5 leading-tight md:leading-[1.2]"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
             {post.title}
           </h1>
 
           {/* Metadata Row */}
-          <div className="flex flex-wrap items-center gap-y-2.5 gap-x-3 sm:gap-x-5 text-xs sm:text-sm text-[#767585] pb-5 border-b border-[#c7c4d7]/40">
+          <div className="flex flex-wrap items-center gap-y-2 gap-x-2.5 sm:gap-x-4 text-[11px] sm:text-xs md:text-sm text-[#767585] pb-4 sm:pb-5 border-b border-[#c7c4d7]/40">
             <span className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#4648d4] to-[#6063ee] flex items-center justify-center text-white font-bold text-xs shadow-sm">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-[#4648d4] to-[#6063ee] flex items-center justify-center text-white font-bold text-[11px] sm:text-xs shadow-sm">
                 {post.author?.charAt(0)?.toUpperCase()}
               </div>
               <span className="text-[#131b2e] font-semibold">{post.author}</span>
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">calendar_today</span>
+            <span className="flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">calendar_today</span>
               <time dateTime={isoPublishedDate}>{dateStr}</time>
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">schedule</span>
+            <span className="flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">schedule</span>
               {readTimeMinutes} min read
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">visibility</span>
+            <span className="flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#4648d4]" aria-hidden="true">visibility</span>
               {post.views || 0} views
             </span>
             <span className="w-1 h-1 rounded-full bg-[#c7c4d7] hidden sm:inline-block" />
-            <a href="#comments" className="flex items-center gap-1.5 text-[#4648d4] font-medium hover:underline transition-all">
-              <span className="material-symbols-outlined text-[15px] sm:text-[16px]" aria-hidden="true">chat_bubble</span>
+            <a href="#comments" className="flex items-center gap-1 text-[#4648d4] font-medium hover:underline transition-all">
+              <span className="material-symbols-outlined text-[14px] sm:text-[16px]" aria-hidden="true">chat_bubble</span>
               {serializedComments.length} {serializedComments.length === 1 ? "comment" : "comments"}
             </a>
           </div>
         </header>
 
         {/* Featured Hero Image */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 mb-8 sm:mb-10">
-          <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[280px] sm:max-h-[400px] md:max-h-[520px] overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg border border-[#c7c4d7]/30 bg-[#131b2e]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 mb-6 sm:mb-10">
+          <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[260px] sm:max-h-[380px] md:max-h-[520px] overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg border border-[#c7c4d7]/30 bg-[#131b2e]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.image}
@@ -304,22 +304,22 @@ export default async function PostPage({ params }) {
         </div>
 
         {/* Article Body */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
-          <div className="text-lg sm:text-xl md:text-2xl text-[#131b2e] font-medium leading-relaxed mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-[#c7c4d7]/30 italic">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-10 md:py-14">
+          <div className="text-base sm:text-xl md:text-2xl text-[#131b2e] font-medium leading-relaxed mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-[#c7c4d7]/30 italic">
             &ldquo;{post.excerpt}&rdquo;
           </div>
 
           <div
-            className="prose prose-lg max-w-none
+            className="prose prose-sm sm:prose-base md:prose-lg max-w-none
               prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#131b2e]
-              prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+              prose-h2:text-xl sm:prose-h2:text-2xl prose-h2:mt-8 sm:prose-h2:mt-10 prose-h2:mb-3 sm:prose-h2:mb-4
+              prose-h3:text-lg sm:prose-h3:text-xl prose-h3:mt-6 sm:prose-h3:mt-8 prose-h3:mb-2.5 sm:prose-h3:mb-3
               prose-a:text-[#4648d4] hover:prose-a:text-[#6063ee] prose-a:font-semibold prose-a:underline
-              prose-p:text-[#464554] prose-p:leading-relaxed prose-p:mb-6
+              prose-p:text-[#464554] prose-p:leading-relaxed prose-p:mb-5 sm:prose-p:mb-6
               prose-strong:text-[#131b2e]
-              prose-blockquote:border-l-[#4648d4] prose-blockquote:text-[#464554] prose-blockquote:bg-[#f0effe]/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-xl
+              prose-blockquote:border-l-[#4648d4] prose-blockquote:text-[#464554] prose-blockquote:bg-[#f0effe]/50 prose-blockquote:py-2 prose-blockquote:px-3 sm:prose-blockquote:px-4 prose-blockquote:rounded-r-xl
               prose-code:text-[#4648d4] prose-code:bg-[#e1e0ff] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-              prose-img:rounded-2xl prose-img:shadow-md"
+              prose-img:rounded-xl sm:prose-img:rounded-2xl prose-img:shadow-md"
             style={{ fontFamily: "'Geist', system-ui, sans-serif" }}
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />

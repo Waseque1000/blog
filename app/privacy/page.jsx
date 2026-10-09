@@ -12,27 +12,34 @@ export const metadata = {
     description: "Learn how your data, comments, and email preferences are handled.",
     url: `${getBaseUrl()}/privacy`,
     siteName: siteConfig.name,
+    images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: "Privacy Policy" }],
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Privacy Policy | ${siteConfig.name}`,
+    description: "Learn how your data, comments, and email preferences are handled.",
+    images: [siteConfig.ogImage],
   },
 };
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#faf8ff] pt-20 pb-16 px-4 sm:px-6">
-      <div className="max-w-3xl mx-auto bg-white p-6 sm:p-10 md:p-12 rounded-2xl shadow-sm border border-[#c7c4d7]/30">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#767585] mb-6 font-medium">
+    <div className="min-h-screen bg-[#faf8ff] pt-20 pb-16 px-3.5 sm:px-6">
+      <div className="max-w-3xl mx-auto bg-white p-4 sm:p-8 md:p-12 rounded-2xl shadow-sm border border-[#c7c4d7]/30">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#767585] mb-5 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-[#4648d4] transition-colors">Home</Link>
           <span className="text-[#c7c4d7]">/</span>
           <span className="text-[#131b2e] font-semibold">Privacy Policy</span>
         </nav>
 
         <h1
-          className="text-3xl sm:text-4xl font-extrabold text-[#131b2e] tracking-tight mb-2"
+          className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#131b2e] tracking-tight mb-2"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
           Privacy Policy
         </h1>
-        <p className="text-xs text-[#767585] mb-8">Effective Date: September 29, 2026</p>
+        <p className="text-xs text-[#767585] mb-6 sm:mb-8">Effective Date: September 29, 2026</p>
 
         <div className="space-y-6 text-sm sm:text-base text-[#464554] leading-relaxed">
           <section>

@@ -165,7 +165,7 @@ export default function CommentsSection({ postId, initialComments = [] }) {
                 onChange={(e) => setAuthor(e.target.value)}
                 maxLength={60}
                 placeholder="e.g. Tanvir Ahmed"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#faf8ff] border border-[#c7c4d7]/40 text-sm text-[#131b2e] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4648d4]/20 focus:border-[#4648d4] transition"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#faf8ff] border border-[#c7c4d7]/40 text-base sm:text-sm text-[#131b2e] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4648d4]/20 focus:border-[#4648d4] transition"
                 disabled={isSubmitting}
               />
             </div>
@@ -187,7 +187,7 @@ export default function CommentsSection({ postId, initialComments = [] }) {
               onChange={(e) => setContent(e.target.value)}
               maxLength={1500}
               placeholder="What are your thoughts on this? Ask questions, share your experience, or give feedback..."
-              className="w-full p-3.5 rounded-xl bg-[#faf8ff] border border-[#c7c4d7]/40 text-sm text-[#131b2e] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4648d4]/20 focus:border-[#4648d4] transition resize-y"
+              className="w-full p-3.5 rounded-xl bg-[#faf8ff] border border-[#c7c4d7]/40 text-base sm:text-sm text-[#131b2e] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4648d4]/20 focus:border-[#4648d4] transition resize-y"
               disabled={isSubmitting}
             />
           </div>

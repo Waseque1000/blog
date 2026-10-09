@@ -40,12 +40,22 @@ export async function generateMetadata({ params }) {
       description: `In-depth ${formattedTitle} analyses, guides, and tutorials on Think.`,
       url: canonicalUrl,
       siteName: siteConfig.name,
+      images: [
+        {
+          url: siteConfig.ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${formattedTitle} on ${siteConfig.name}`,
+        },
+      ],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: `${formattedTitle} | ${siteConfig.name}`,
       description: `In-depth ${formattedTitle} analyses and guides on Think.`,
+      images: [siteConfig.ogImage],
+      creator: siteConfig.twitterHandle,
     },
   };
 }

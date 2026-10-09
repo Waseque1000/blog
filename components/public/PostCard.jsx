@@ -42,6 +42,9 @@ export default function PostCard({ post, featured = false }) {
             <img
               src={post.image}
               alt={post.title}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
             <div className="absolute top-4 left-4 z-10">
@@ -53,22 +56,22 @@ export default function PostCard({ post, featured = false }) {
           </div>
 
           {/* Content column */}
-          <div className="lg:col-span-6 xl:col-span-5 p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between bg-white">
+          <div className="lg:col-span-6 xl:col-span-5 p-4 sm:p-6 md:p-8 lg:p-9 flex flex-col justify-between bg-white">
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#e1e0ff] text-[#4648d4] text-[11px] font-bold uppercase tracking-wider">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-3">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#e1e0ff] text-[#4648d4] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
                   {post.category}
                 </span>
-                <span className="text-[#767585] text-xs font-medium">• {dateStr}</span>
-                <span className="text-[#767585] text-xs font-medium">• {readTimeMinutes} min read</span>
+                <span className="text-[#767585] text-[11px] sm:text-xs font-medium">• {dateStr}</span>
+                <span className="text-[#767585] text-[11px] sm:text-xs font-medium">• {readTimeMinutes} min read</span>
               </div>
               <h2
-                className="text-xl sm:text-2xl lg:text-[28px] xl:text-[32px] lg:leading-[36px] xl:leading-[40px] font-extrabold text-[#131b2e] tracking-tight mb-3 group-hover:text-[#4648d4] transition-colors"
+                className="text-lg sm:text-2xl lg:text-[28px] xl:text-[32px] sm:leading-snug lg:leading-[36px] xl:leading-[40px] font-extrabold text-[#131b2e] tracking-tight mb-2.5 sm:mb-3 group-hover:text-[#4648d4] transition-colors"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "-0.02em" }}
               >
                 {post.title}
               </h2>
-              <p className="text-sm sm:text-base text-[#464554] leading-relaxed line-clamp-3 sm:line-clamp-4 mb-4">
+              <p className="text-xs sm:text-sm md:text-base text-[#464554] leading-relaxed line-clamp-3 sm:line-clamp-4 mb-3 sm:mb-4">
                 {post.excerpt}
               </p>
 
@@ -158,6 +161,8 @@ export default function PostCard({ post, featured = false }) {
           <img
             src={post.image}
             alt={post.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-[#283044]/80 text-[#eef0ff] text-[10px] sm:text-[11px] font-semibold backdrop-blur-sm">
@@ -166,7 +171,7 @@ export default function PostCard({ post, featured = false }) {
         </div>
 
         {/* Body */}
-        <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+        <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between">
           <div>
             <h3
               className="text-base sm:text-lg font-bold text-[#131b2e] tracking-tight line-clamp-2 mb-2 group-hover:text-[#4648d4] transition-colors leading-snug"

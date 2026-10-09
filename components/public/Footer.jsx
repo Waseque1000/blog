@@ -1,16 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export default function Footer() {
-  const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
-
   return (
     <footer className="w-full bg-white border-t border-[#c7c4d7]/30 mt-16">
-      <div className="max-w-[1320px] mx-auto px-4 md:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-10 border-b border-[#c7c4d7]/20">
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10 pb-8 sm:pb-10 border-b border-[#c7c4d7]/20">
           {/* Brand */}
           <div className="md:col-span-4">
             <div className="flex items-center gap-3 mb-4">
@@ -50,8 +46,8 @@ export default function Footer() {
             <span className="text-[13px] font-semibold text-[#131b2e] uppercase tracking-wider block mb-2">Dispatch Letter</span>
             <p className="text-sm text-[#464554] mb-4">Weekly curated essays and visual features delivered to your inbox.</p>
             <div className="flex flex-col sm:flex-row gap-2 bg-[#f2f3ff] p-1.5 rounded-2xl sm:rounded-full border border-[#c7c4d7]/40">
-              <input className="bg-transparent text-sm text-[#131b2e] placeholder:text-[#464554] px-3 py-1.5 flex-1 focus:outline-none" placeholder="Your email address" type="email" />
-              <button className="bg-[#131b2e] text-white hover:bg-[#4648d4] text-[13px] font-semibold px-4 py-2 sm:py-1.5 rounded-xl sm:rounded-full transition-colors whitespace-nowrap">Subscribe</button>
+              <input className="bg-transparent text-base sm:text-sm text-[#131b2e] placeholder:text-[#464554] px-3 py-1.5 flex-1 focus:outline-none" placeholder="Your email address" type="email" />
+              <button className="bg-[#131b2e] text-white hover:bg-[#4648d4] text-[13px] font-semibold px-4 py-2 sm:py-1.5 rounded-xl sm:rounded-full transition-colors whitespace-nowrap cursor-pointer">Subscribe</button>
             </div>
             <div className="mt-2">
               <span className="text-[11px] text-[#464554]">By subscribing, you agree to our <Link href="/privacy" className="underline">Privacy Policy</Link>.</span>

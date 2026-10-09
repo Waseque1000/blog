@@ -4,8 +4,33 @@ import Link from "next/link";
 import { getBaseUrl, siteConfig } from "@/lib/seo";
 
 export const metadata = {
+  title: siteConfig.title,
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
   alternates: {
     canonical: "/",
+  },
+  openGraph: {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: "/",
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.title,
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+    creator: siteConfig.twitterHandle,
   },
 };
 
@@ -53,7 +78,7 @@ export default function HomePage() {
               <span className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase">Curated Editorial Feed</span>
             </div>
             <h1
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold max-w-4xl text-[#131b2e] tracking-tight mb-3 leading-tight md:leading-[62px]"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold max-w-4xl text-[#131b2e] tracking-tight mb-3 leading-tight sm:leading-snug md:leading-[62px]"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em' }}
             >
               Stories worth reading. <br className="hidden sm:inline" />
@@ -61,27 +86,27 @@ export default function HomePage() {
                 Ideas worth sharing.
               </span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg text-[#464554] max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed px-2">
+            <p className="text-xs sm:text-base md:text-lg text-[#464554] max-w-2xl mx-auto mb-5 sm:mb-8 leading-relaxed px-1 sm:px-2">
               Discover thoughtful perspectives, deep technical dives, and visual stories curated from independent thinkers across the digital vanguard.
             </p>
 
             {/* Search Input Bar */}
-            <div className="w-full max-w-2xl relative mb-6 group px-1 sm:px-0">
+            <div className="w-full max-w-2xl relative mb-5 sm:mb-6 group px-1 sm:px-0">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4648d4]/20 via-[#00628d]/20 to-[#ba0035]/20 rounded-full blur-md opacity-40 group-focus-within:opacity-100 transition duration-300" />
-              <form action="/search" method="GET" className="relative flex items-center bg-white rounded-full shadow-md px-3 sm:px-4 py-2 sm:py-2.5 border border-[#c7c4d7]/30">
-                <span className="material-symbols-outlined text-[#767586] text-[20px] sm:text-[22px] ml-1">search</span>
+              <form action="/search" method="GET" className="relative flex items-center bg-white rounded-full shadow-md px-2.5 sm:px-4 py-1.5 sm:py-2.5 border border-[#c7c4d7]/30">
+                <span className="material-symbols-outlined text-[#767586] text-[18px] sm:text-[22px] ml-1">search</span>
                 <input
                   name="q"
-                  className="w-full bg-transparent text-sm sm:text-base text-[#131b2e] placeholder:text-[#767586] px-2.5 sm:px-3 focus:outline-none"
+                  className="w-full bg-transparent text-xs sm:text-base text-[#131b2e] placeholder:text-[#767586] px-2 sm:px-3 focus:outline-none"
                   placeholder="Search tech articles, coding tutorials, and guides..."
                   type="text"
                 />
                 <button
                   type="submit"
-                  className="bg-[#131b2e] text-white hover:bg-[#4648d4] transition-all duration-200 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-[13px] font-semibold flex items-center gap-1 shrink-0"
+                  className="bg-[#131b2e] text-white hover:bg-[#4648d4] transition-all duration-200 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-semibold flex items-center gap-1 shrink-0"
                 >
                   <span>Find</span>
-                  <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                  <span className="material-symbols-outlined text-[14px] sm:text-[15px]">arrow_forward</span>
                 </button>
               </form>
             </div>
@@ -142,7 +167,7 @@ export default function HomePage() {
             <p className="text-xs sm:text-sm text-[#464554]">Try selecting a different category or clearing search filters.</p>
           </div>
         ) : (
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-12 sm:mb-16">
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
             {displayPosts.map(post => (
               <PostCard key={post._id} post={post} />
             ))}
@@ -150,7 +175,7 @@ export default function HomePage() {
         )}
 
         {/* Newsletter Banner */}
-        <section className="my-10 sm:my-14 bg-gradient-to-r from-[#283044] via-[#283044] to-[#131b2e] text-[#eef0ff] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
+        <section className="my-8 sm:my-14 bg-gradient-to-r from-[#283044] via-[#283044] to-[#131b2e] text-[#eef0ff] rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
             <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-[#4648d4]/20 blur-3xl pointer-events-none" />
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
               <div className="lg:col-span-7">

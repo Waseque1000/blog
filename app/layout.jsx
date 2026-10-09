@@ -4,6 +4,12 @@ import Script from "next/script";
 import { siteConfig, getBaseUrl } from "@/lib/seo";
 import "./globals.css";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata = {
   metadataBase: new URL(getBaseUrl()),
   title: {

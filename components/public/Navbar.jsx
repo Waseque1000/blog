@@ -28,8 +28,6 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
-  if (pathname.startsWith("/admin")) return null;
-
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Technology", href: "/category/technology" },
